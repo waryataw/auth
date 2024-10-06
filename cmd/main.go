@@ -24,23 +24,28 @@ type server struct {
 
 // Get ...
 func (s *server) Get(_ context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
-	log.Printf("User id: %d", req.GetId())
+	log.Printf("Handling Get request, User ID: %d", req.GetId())
 
 	roles := []desc.Role{
 		desc.Role_USER,
 		desc.Role_ADMIN,
 	}
 
-	randomIndex := gofakeit.Number(0, len(roles)-1)
+	now := gofakeit.Date()
 
 	return &desc.GetResponse{
 		Id:        req.GetId(),
 		Name:      gofakeit.Username(),
 		Email:     gofakeit.Email(),
-		Role:      roles[randomIndex],
-		CreatedAt: timestamppb.New(gofakeit.Date()),
-		UpdatedAt: timestamppb.New(gofakeit.Date()),
+		Role:      getRandomRole(roles),
+		CreatedAt: timestamppb.New(now),
+		UpdatedAt: timestamppb.New(now),
 	}, nil
+}
+
+func getRandomRole(roles []desc.Role) desc.Role {
+	randomIndex := gofakeit.Number(0, len(roles)-1)
+	return roles[randomIndex]
 }
 
 func (s *server) Create(_ context.Context, _ *desc.CreateRequest) (*desc.CreateResponse, error) {
