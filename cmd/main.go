@@ -107,13 +107,13 @@ func (s *server) Create(ctx context.Context, req *desc.CreateRequest) (*desc.Cre
 
 	query, args, err := builderInsert.ToSql()
 	if err != nil {
-		log.Fatalf("failed to build query: %v", err)
+		return nil, fmt.Errorf("failed to build query: %v", err)
 	}
 
 	var userID int64
 	err = s.pool.QueryRow(ctx, query, args...).Scan(&userID)
 	if err != nil {
-		log.Fatalf("failed to insert user: %v", err)
+		return nil, fmt.Errorf("failed to insert user: %v", err)
 	}
 
 	log.Printf("inserted user with id: %d", userID)
@@ -129,17 +129,17 @@ func (s *server) Update(ctx context.Context, req *desc.UpdateRequest) (*emptypb.
 		Set("name", req.GetName()).
 		Set("email", req.GetEmail()).
 		Set("role", req.GetRole()).
-		Set("updated_at", time.Now()).
+		Set("updated_at", time.Now().UTC()).
 		Where(sq.Eq{"id": req.GetId()})
 
 	query, args, err := bq.ToSql()
 	if err != nil {
-		log.Fatalf("failed to build query: %v", err)
+		return nil, fmt.Errorf("failed to build query: %v", err)
 	}
 
 	_, err = s.pool.Exec(ctx, query, args...)
 	if err != nil {
-		log.Fatalf("failed to update user: %v", err)
+		return nil, fmt.Errorf("failed to update user: %v", err)
 	}
 
 	return &emptypb.Empty{}, nil
