@@ -123,7 +123,25 @@ func (s *server) Create(ctx context.Context, req *desc.CreateRequest) (*desc.Cre
 	}, nil
 }
 
-func (s *server) Update(_ context.Context, _ *desc.UpdateRequest) (*emptypb.Empty, error) {
+func (s *server) Update(ctx context.Context, req *desc.UpdateRequest) (*emptypb.Empty, error) {
+	bq := sq.Update("users").
+		PlaceholderFormat(sq.Dollar).
+		Set("name", req.GetName()).
+		Set("email", req.GetEmail()).
+		Set("role", req.GetRole()).
+		Set("updated_at", time.Now()).
+		Where(sq.Eq{"id": req.GetId()})
+
+	query, args, err := bq.ToSql()
+	if err != nil {
+		log.Fatalf("failed to build query: %v", err)
+	}
+
+	_, err = s.pool.Exec(ctx, query, args...)
+	if err != nil {
+		log.Fatalf("failed to update user: %v", err)
+	}
+
 	return &emptypb.Empty{}, nil
 }
 
