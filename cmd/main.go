@@ -124,7 +124,29 @@ func (s *server) Create(ctx context.Context, req *desc.CreateRequest) (*desc.Cre
 }
 
 func (s *server) Update(ctx context.Context, req *desc.UpdateRequest) (*emptypb.Empty, error) {
-	bq := sq.Update("users").
+
+	bqs := sq.Select("1").
+		From("users").
+		PlaceholderFormat(sq.Dollar).
+		Where(sq.Eq{"id": req.GetId()}).
+		Limit(1)
+
+	query, args, err := bqs.ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build query: %v", err)
+	}
+
+	var exist int
+
+	err = s.pool.QueryRow(ctx, query, args...).Scan(&exist)
+	if err != nil {
+		if err.Error() == "no rows in result set" {
+			return nil, fmt.Errorf("user: %d not founded", req.GetId())
+		}
+		return nil, fmt.Errorf("failed to execute query: %v", err)
+	}
+
+	bqu := sq.Update("users").
 		PlaceholderFormat(sq.Dollar).
 		Set("name", req.GetName()).
 		Set("email", req.GetEmail()).
@@ -132,7 +154,7 @@ func (s *server) Update(ctx context.Context, req *desc.UpdateRequest) (*emptypb.
 		Set("updated_at", time.Now().UTC()).
 		Where(sq.Eq{"id": req.GetId()})
 
-	query, args, err := bq.ToSql()
+	query, args, err = bqu.ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("failed to build query: %v", err)
 	}
@@ -145,7 +167,37 @@ func (s *server) Update(ctx context.Context, req *desc.UpdateRequest) (*emptypb.
 	return &emptypb.Empty{}, nil
 }
 
-func (s *server) Delete(_ context.Context, _ *desc.DeleteRequest) (*emptypb.Empty, error) {
+func (s *server) Delete(ctx context.Context, req *desc.DeleteRequest) (*emptypb.Empty, error) {
+
+	bqs := sq.Select("1").
+		From("users").
+		PlaceholderFormat(sq.Dollar).
+		Where(sq.Eq{"id": req.GetId()}).
+		Limit(1)
+
+	query, args, err := bqs.ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build query: %v", err)
+	}
+
+	var exist int
+
+	err = s.pool.QueryRow(ctx, query, args...).Scan(&exist)
+	if err != nil {
+		if err.Error() == "no rows in result set" {
+			return nil, fmt.Errorf("user: %d not founded", req.GetId())
+		}
+		return nil, fmt.Errorf("failed to execute query: %v", err)
+	}
+
+	bqd := sq.Delete("users").PlaceholderFormat(sq.Dollar).Where(sq.Eq{"id": req.GetId()})
+
+	query, args, err = bqd.ToSql()
+	_, err = s.pool.Exec(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute query: %v", err)
+	}
+
 	return &emptypb.Empty{}, nil
 }
 
