@@ -8,6 +8,8 @@ import (
 	"net"
 	"time"
 
+	desc "github.com/waryataw/auth/pkg/user_v1"
+
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/waryataw/auth/internal/config"
@@ -15,9 +17,9 @@ import (
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
-
-	desc "github.com/waryataw/auth/pkg/user_v1"
 )
+
+const errNoRows = "no rows in result set"
 
 var configPath string
 
@@ -77,6 +79,7 @@ func roleByRoleID(id int) (*desc.Role, error) {
 
 	// Определяем возможные роли
 	roles := []desc.Role{
+		desc.Role_UNKNOWN,
 		desc.Role_USER,
 		desc.Role_ADMIN,
 	}
@@ -140,7 +143,7 @@ func (s *server) Update(ctx context.Context, req *desc.UpdateRequest) (*emptypb.
 
 	err = s.pool.QueryRow(ctx, query, args...).Scan(&exist)
 	if err != nil {
-		if err.Error() == "no rows in result set" {
+		if err.Error() == errNoRows {
 			return nil, fmt.Errorf("user: %d not founded", req.GetId())
 		}
 		return nil, fmt.Errorf("failed to execute query: %v", err)
@@ -184,7 +187,7 @@ func (s *server) Delete(ctx context.Context, req *desc.DeleteRequest) (*emptypb.
 
 	err = s.pool.QueryRow(ctx, query, args...).Scan(&exist)
 	if err != nil {
-		if err.Error() == "no rows in result set" {
+		if err.Error() == errNoRows {
 			return nil, fmt.Errorf("user: %d not founded", req.GetId())
 		}
 		return nil, fmt.Errorf("failed to execute query: %v", err)
