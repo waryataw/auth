@@ -31,14 +31,15 @@ type server struct {
 }
 
 func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
-	// Строим SQL-запрос с использованием Squirrel
+
+	// Строим запрос с использованием Squirrel
 	bQ := sq.Select("id", "name", "email", "role", "created_at", "updated_at").
 		From("users").
 		PlaceholderFormat(sq.Dollar).
 		Where(sq.Eq{"id": req.GetId()}).
 		Limit(1)
 
-	// Генерируем SQL-запрос и аргументы
+	// Генерируем запрос и аргументы
 	query, args, err := bQ.ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("failed to build query: %v", err)
@@ -46,15 +47,33 @@ func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetRespon
 
 	// Объявляем переменные для сканирования данных из базы
 	var id int64
-	var role int
+	var roleID int
 	var name, email string
 	var createdAt, updatedAt *time.Time
 
 	// Выполняем запрос и сканируем результат
-	err = s.pool.QueryRow(ctx, query, args...).Scan(&id, &name, &email, &role, &createdAt, &updatedAt)
+	err = s.pool.QueryRow(ctx, query, args...).Scan(&id, &name, &email, &roleID, &createdAt, &updatedAt)
 	if err != nil {
 		return nil, fmt.Errorf("failed to select user: %v", err)
 	}
+
+	role, err := roleByRoleID(roleID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to select user: %v", err)
+	}
+
+	// Возвращаем ответ в формате gRPC
+	return &desc.GetResponse{
+		Id:        id,
+		Name:      name,
+		Email:     email,
+		Role:      *role,
+		CreatedAt: convertTimeToProtoTime(createdAt),
+		UpdatedAt: convertTimeToProtoTime(updatedAt),
+	}, nil
+}
+
+func roleByRoleID(id int) (*desc.Role, error) {
 
 	// Определяем возможные роли
 	roles := []desc.Role{
@@ -63,19 +82,11 @@ func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetRespon
 	}
 
 	// Проверяем границы значения role
-	if role < 0 || role >= len(roles) {
-		return nil, fmt.Errorf("invalid role value: %d", role)
+	if id < 0 || id >= len(roles) {
+		return nil, fmt.Errorf("invalid role value: %d", id)
 	}
 
-	// Возвращаем ответ в формате gRPC
-	return &desc.GetResponse{
-		Id:        id,
-		Name:      name,
-		Email:     email,
-		Role:      roles[role], // Преобразование значения role в enum
-		CreatedAt: convertTimeToProtoTime(createdAt),
-		UpdatedAt: convertTimeToProtoTime(updatedAt),
-	}, nil
+	return &roles[id], nil
 }
 
 func convertTimeToProtoTime(t *time.Time) *timestamppb.Timestamp {
