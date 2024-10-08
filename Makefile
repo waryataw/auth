@@ -44,3 +44,6 @@ local-migration-down:
 
 create-migration:
 	$(LOCAL_BIN)/goose -dir migrations create add_user_table sql
+
+clean-mod-cache:
+	GOBIN=$(LOCAL_BIN) go clean -modcache
