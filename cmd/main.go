@@ -32,6 +32,7 @@ type server struct {
 	pool *pgxpool.Pool
 }
 
+// Get Получение существующего пользователя
 func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
 
 	// Строим запрос с использованием Squirrel
@@ -59,6 +60,7 @@ func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetRespon
 		return nil, fmt.Errorf("failed to select user: %v", err)
 	}
 
+	// Получаем роль по идентификатору Роли
 	role, err := roleByRoleID(roleID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to select user: %v", err)
@@ -75,6 +77,7 @@ func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetRespon
 	}, nil
 }
 
+// roleByRoleID Получение роли по идентификатору роли, если идентификатор вне диапазона возвращаем ошибку
 func roleByRoleID(id int) (*desc.Role, error) {
 
 	// Определяем возможные роли
@@ -92,6 +95,7 @@ func roleByRoleID(id int) (*desc.Role, error) {
 	return &roles[id], nil
 }
 
+// convertTimeToProtoTime Конвертируем Time для ответа в формате gRPC или null
 func convertTimeToProtoTime(t *time.Time) *timestamppb.Timestamp {
 	if t == nil {
 		return nil
@@ -100,6 +104,7 @@ func convertTimeToProtoTime(t *time.Time) *timestamppb.Timestamp {
 	return timestamppb.New(*t)
 }
 
+// Create Добавление нового пользователя
 func (s *server) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
 	// Делаем запрос на вставку записи в таблицу пользователя
 	builderInsert := sq.Insert("users").
@@ -126,6 +131,7 @@ func (s *server) Create(ctx context.Context, req *desc.CreateRequest) (*desc.Cre
 	}, nil
 }
 
+// Update Изменения существующего пользователя
 func (s *server) Update(ctx context.Context, req *desc.UpdateRequest) (*emptypb.Empty, error) {
 
 	bqs := sq.Select("1").
@@ -170,6 +176,7 @@ func (s *server) Update(ctx context.Context, req *desc.UpdateRequest) (*emptypb.
 	return &emptypb.Empty{}, nil
 }
 
+// Delete Удаление существующего пользователя
 func (s *server) Delete(ctx context.Context, req *desc.DeleteRequest) (*emptypb.Empty, error) {
 
 	bqs := sq.Select("1").
