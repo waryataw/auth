@@ -32,18 +32,33 @@ type server struct {
 	pool *pgxpool.Pool
 }
 
-// Get Получение существующего пользователя
-func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
+type userQuery struct {
+	ID   int64
+	name string
+}
+
+func getUserQueryBuilderByQuery(uq userQuery) sq.SelectBuilder {
 
 	// Строим запрос с использованием Squirrel
 	bQ := sq.Select("id", "name", "email", "role", "created_at", "updated_at").
 		From("users").
 		PlaceholderFormat(sq.Dollar).
-		Where(sq.Eq{"id": req.GetId()}).
 		Limit(1)
 
-	// Генерируем запрос и аргументы
-	query, args, err := bQ.ToSql()
+	if uq.ID > 0 {
+		bQ = bQ.Where(sq.Eq{"id": uq.ID})
+	}
+
+	if uq.name != "" {
+		bQ = bQ.Where(sq.Like{"name": uq.name})
+	}
+
+	return bQ
+}
+
+// Get Получение существующего пользователя
+func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
+	query, args, err := getUserQueryBuilderByQuery(userQuery{ID: req.GetId()}).ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("failed to build query: %v", err)
 	}
@@ -68,12 +83,52 @@ func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetRespon
 
 	// Возвращаем ответ в формате gRPC
 	return &desc.GetResponse{
-		Id:        id,
-		Name:      name,
-		Email:     email,
-		Role:      *role,
-		CreatedAt: convertTimeToProtoTime(createdAt),
-		UpdatedAt: convertTimeToProtoTime(updatedAt),
+		User: &desc.User{
+			Id:        id,
+			Name:      name,
+			Email:     email,
+			Role:      *role,
+			CreatedAt: convertTimeToProtoTime(createdAt),
+			UpdatedAt: convertTimeToProtoTime(updatedAt),
+		},
+	}, nil
+}
+
+// GetByName Get Получение существующего пользователя по Имени
+func (s *server) GetByName(ctx context.Context, req *desc.GetByNameRequest) (*desc.GetByNameResponse, error) {
+	query, args, err := getUserQueryBuilderByQuery(userQuery{name: req.GetName()}).ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build query: %v", err)
+	}
+
+	// Объявляем переменные для сканирования данных из базы
+	var id int64
+	var roleID int
+	var name, email string
+	var createdAt, updatedAt *time.Time
+
+	// Выполняем запрос и сканируем результат
+	err = s.pool.QueryRow(ctx, query, args...).Scan(&id, &name, &email, &roleID, &createdAt, &updatedAt)
+	if err != nil {
+		return nil, fmt.Errorf("failed to select user: %v", err)
+	}
+
+	// Получаем роль по идентификатору Роли
+	role, err := roleByRoleID(roleID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to select user: %v", err)
+	}
+
+	// Возвращаем ответ в формате gRPC
+	return &desc.GetByNameResponse{
+		User: &desc.User{
+			Id:        id,
+			Name:      name,
+			Email:     email,
+			Role:      *role,
+			CreatedAt: convertTimeToProtoTime(createdAt),
+			UpdatedAt: convertTimeToProtoTime(updatedAt),
+		},
 	}, nil
 }
 
