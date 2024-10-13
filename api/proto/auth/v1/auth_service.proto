@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package auth_v1;
+
+import "google/protobuf/empty.proto";
+import "auth_messages.proto";
+
+option go_package = "github.com/waryataw/auth/pkg/auth_v1";
+
+service AuthService {
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc UpdateUser(UpdateUserRequest) returns (google.protobuf.Empty);
+  rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
+}
