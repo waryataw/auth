@@ -98,14 +98,14 @@ func (s *server) GetUser(ctx context.Context, req *authv1.GetUserRequest) (*auth
 		Id:        id,
 		Name:      name,
 		Email:     email,
-		Role:      *roleByRoleID(roleID),
+		Role:      *getRole(roleID),
 		CreatedAt: createdAtProto,
 		UpdatedAt: updatedAtProto,
 	}, nil
 }
 
-// roleByRoleID Получение роли по идентификатору
-func roleByRoleID(id int) *authv1.Role {
+// getRole Получение роли по идентификатору
+func getRole(id int) *authv1.Role {
 	roles := []authv1.Role{
 		authv1.Role_UNKNOWN,
 		authv1.Role_USER,
@@ -182,7 +182,7 @@ func (s *server) DeleteUser(ctx context.Context, req *authv1.DeleteUserRequest) 
 
 	sql, args, err := queryDelete.PlaceholderFormat(sq.Dollar).ToSql()
 	if err != nil {
-		return nil, fmt.Errorf("failed to build query: %v", err)
+		return nil, fmt.Errorf("failed to build query: %w", err)
 	}
 
 	tag, err := s.pool.Exec(ctx, sql, args...)

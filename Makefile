@@ -22,9 +22,9 @@ get-deps:
 
 
 generate:
-	make generate-note-api
+	make generate-auth-api
 
-generate-note-api:
+generate-auth-api:
 	mkdir -p pkg/authv1
 	protoc --proto_path api/proto/auth/v1 \
 	--go_out=pkg/authv1 --go_opt=paths=source_relative \
