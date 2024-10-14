@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package auth_v1;
 
-option go_package = "github.com/waryataw/auth/pkg/auth_v1";
+option go_package = "github.com/waryataw/auth/pkg/authv1";
 
 enum Role {
   UNKNOWN = 0;

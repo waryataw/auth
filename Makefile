@@ -25,15 +25,14 @@ generate:
 	make generate-note-api
 
 generate-note-api:
-	mkdir -p pkg/auth_v1
+	mkdir -p pkg/authv1
 	protoc --proto_path api/proto/auth/v1 \
-	--go_out=pkg/auth_v1 --go_opt=paths=source_relative \
+	--go_out=pkg/authv1 --go_opt=paths=source_relative \
 	--plugin=protoc-gen-go=bin/protoc-gen-go \
-	--go-grpc_out=pkg/auth_v1 --go-grpc_opt=paths=source_relative \
+	--go-grpc_out=pkg/authv1 --go-grpc_opt=paths=source_relative \
 	--plugin=protoc-gen-go-grpc=bin/protoc-gen-go-grpc \
 	api/proto/auth/v1/auth_service.proto \
-	api/proto/auth/v1/auth_messages.proto \
-	api/proto/auth/v1/auth_user_role.proto
+	api/proto/auth/v1/auth_user_roles.proto
 
 local-migration-status:
 	$(LOCAL_BIN)/goose -dir ${LOCAL_MIGRATION_DIR} postgres ${LOCAL_MIGRATION_DSN} status -v
