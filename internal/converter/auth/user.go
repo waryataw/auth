@@ -25,7 +25,7 @@ func ToGetUserResponseFromUser(user *model.User) *authv1.GetUserResponse {
 }
 
 // getRole Получение роли по идентификатору
-func getRole(id int32) *authv1.Role {
+func getRole(id model.Role) *authv1.Role {
 	roles := []authv1.Role{
 		authv1.Role_UNKNOWN,
 		authv1.Role_USER,
@@ -42,7 +42,7 @@ func ToUserFromCreateUserRequest(req *authv1.CreateUserRequest) *model.User {
 		Email:           req.Email,
 		Password:        req.Password,
 		PasswordConfirm: req.PasswordConfirm,
-		Role:            int32(req.Role.Number()),
+		Role:            model.Role(req.Role),
 	}
 }
 
@@ -52,6 +52,6 @@ func ToUserFromUpdateUserRequest(req *authv1.UpdateUserRequest) *model.User {
 		ID:    req.GetId(),
 		Name:  req.Name,
 		Email: req.Email,
-		Role:  int32(req.Role.Number()),
+		Role:  model.Role(req.Role),
 	}
 }

@@ -4,6 +4,9 @@ import (
 	"time"
 )
 
+// Role Роль пользователя
+type Role int32
+
 // User Пользователь
 type User struct {
 	ID              int64
@@ -11,7 +14,7 @@ type User struct {
 	Email           string
 	Password        string
 	PasswordConfirm string
-	Role            int32
+	Role            Role
 	CreatedAt       *time.Time
 	UpdatedAt       *time.Time
 }
