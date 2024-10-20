@@ -9,7 +9,6 @@ import (
 	"github.com/waryataw/auth/internal/client/db"
 	"github.com/waryataw/auth/internal/model"
 	"github.com/waryataw/auth/internal/repository"
-	modelRepo "github.com/waryataw/auth/internal/repository/user/model"
 )
 
 const (
@@ -97,7 +96,7 @@ func (r *repo) Get(ctx context.Context, id int64) (*model.User, error) {
 		QueryRaw: sql,
 	}
 
-	var user modelRepo.User
+	var user model.User
 	err = r.db.DB().QueryRowContext(ctx, query, args...).
 		Scan(
 			&user.ID,
@@ -113,20 +112,7 @@ func (r *repo) Get(ctx context.Context, id int64) (*model.User, error) {
 		return nil, fmt.Errorf("failed to execute query: %w", err)
 	}
 
-	var updatedAt *time.Time
-	if user.UpdatedAt.Valid {
-		updatedAt = &user.UpdatedAt.Time
-	}
-
-	return &model.User{
-		ID:        user.ID,
-		Name:      user.Name,
-		Email:     user.Email,
-		Password:  user.Password,
-		Role:      user.Role,
-		CreatedAt: &user.CreatedAt,
-		UpdatedAt: updatedAt,
-	}, nil
+	return &user, nil
 }
 
 func (r *repo) Update(ctx context.Context, user *model.User) error {
