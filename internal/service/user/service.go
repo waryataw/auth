@@ -5,7 +5,7 @@ import (
 	"github.com/waryataw/auth/internal/service"
 )
 
-type serv struct {
+type userService struct {
 	userRepository repository.UserRepository
 }
 
@@ -13,7 +13,7 @@ type serv struct {
 func NewService(
 	userRepository repository.UserRepository,
 ) service.UserService {
-	return &serv{
+	return &userService{
 		userRepository: userRepository,
 	}
 }

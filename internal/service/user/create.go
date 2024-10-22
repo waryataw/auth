@@ -7,7 +7,7 @@ import (
 	"github.com/waryataw/auth/internal/model"
 )
 
-func (s *serv) Create(ctx context.Context, user *model.User) (int64, error) {
+func (s *userService) Create(ctx context.Context, user *model.User) (int64, error) {
 	if !user.Role.IsValid() {
 		return 0, fmt.Errorf("user role is not valid")
 	}

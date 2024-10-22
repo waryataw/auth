@@ -9,11 +9,11 @@ type Role int32
 
 const (
 	// RoleUnknown Роль не определена
-	RoleUnknown Role = iota
+	RoleUnknown Role = 0
 	// RoleUser Роль Пользователь
-	RoleUser
+	RoleUser = 1
 	// RoleAdmin Роль админ
-	RoleAdmin
+	RoleAdmin = 2
 )
 
 // IsValid Валидация Роли

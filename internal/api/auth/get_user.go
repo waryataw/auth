@@ -10,10 +10,10 @@ import (
 
 // GetUser Получение существующего пользователя
 func (i *Implementation) GetUser(ctx context.Context, req *authv1.GetUserRequest) (*authv1.GetUserResponse, error) {
-	user, err := i.userService.Get(ctx, req.GetId())
+	user, err := i.userService.Get(ctx, req.GetId(), req.GetName())
 	if err != nil {
 		return nil, fmt.Errorf("failed to delete user: %w", err)
 	}
 
-	return auth.ToGetUserResponseFromUser(user), nil
+	return auth.ToGetUserResponse(user), nil
 }

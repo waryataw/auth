@@ -10,7 +10,7 @@ import (
 
 // CreateUser Добавление нового пользователя
 func (i *Implementation) CreateUser(ctx context.Context, req *authv1.CreateUserRequest) (*authv1.CreateUserResponse, error) {
-	id, err := i.userService.Create(ctx, auth.ToUserFromCreateUserRequest(req))
+	id, err := i.userService.Create(ctx, auth.ToUser(req))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}

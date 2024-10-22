@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 
@@ -26,7 +27,7 @@ func NewApp(ctx context.Context) (*App, error) {
 
 	err := a.initDeps(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to init deps: %w", err)
 	}
 
 	return a, nil
@@ -62,7 +63,7 @@ func (a *App) initDeps(ctx context.Context) error {
 func (a *App) initConfig(_ context.Context) error {
 	err := config.Load(".env")
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to load config: %w", err)
 	}
 
 	return nil
@@ -88,12 +89,12 @@ func (a *App) runGRPCServer() error {
 
 	list, err := net.Listen("tcp", a.serviceProvider.GRPCConfig().Address())
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to listen: %w", err)
 	}
 
 	err = a.grpcServer.Serve(list)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to serve: %w", err)
 	}
 
 	return nil

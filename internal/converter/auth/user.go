@@ -7,8 +7,8 @@ import (
 	"github.com/waryataw/auth/pkg/authv1"
 )
 
-// ToGetUserResponseFromUser Метод конвертации пользователя в ответ метода получения пользователя
-func ToGetUserResponseFromUser(user *model.User) *authv1.GetUserResponse {
+// ToGetUserResponse Метод конвертации пользователя в ответ метода получения пользователя
+func ToGetUserResponse(user *model.User) *authv1.GetUserResponse {
 	var updatedAt *timestamppb.Timestamp
 	if user.UpdatedAt != nil {
 		updatedAt = timestamppb.New(*user.UpdatedAt)
@@ -35,8 +35,8 @@ func getRole(id model.Role) *authv1.Role {
 	return &roles[id]
 }
 
-// ToUserFromCreateUserRequest Метод конвертации CreateUserRequest в пользователя
-func ToUserFromCreateUserRequest(req *authv1.CreateUserRequest) *model.User {
+// ToUser Метод конвертации CreateUserRequest в пользователя
+func ToUser(req *authv1.CreateUserRequest) *model.User {
 	return &model.User{
 		Name:            req.Name,
 		Email:           req.Email,
@@ -46,8 +46,8 @@ func ToUserFromCreateUserRequest(req *authv1.CreateUserRequest) *model.User {
 	}
 }
 
-// ToUserFromUpdateUserRequest Метод конвертации UpdateUserRequest в пользователя
-func ToUserFromUpdateUserRequest(req *authv1.UpdateUserRequest) *model.User {
+// ToUserForUpdate Метод конвертации UpdateUserRequest в пользователя
+func ToUserForUpdate(req *authv1.UpdateUserRequest) *model.User {
 	return &model.User{
 		ID:    req.GetId(),
 		Name:  req.Name,
