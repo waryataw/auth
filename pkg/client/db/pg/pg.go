@@ -16,7 +16,7 @@ import (
 type key string
 
 const (
-	// TxKey Ключ транзакции
+	// TxKey Ключ транзакции.
 	TxKey key = "tx"
 )
 
@@ -24,7 +24,7 @@ type pg struct {
 	dbc *pgxpool.Pool
 }
 
-// NewDB Конструктор pg db
+// NewDB Конструктор pg db.
 func NewDB(dbc *pgxpool.Pool) db.DB {
 	return &pg{
 		dbc: dbc,
@@ -98,7 +98,7 @@ func (p *pg) Close() {
 	p.dbc.Close()
 }
 
-// MakeContextTx Контекст транзакции
+// MakeContextTx Контекст транзакции.
 func MakeContextTx(ctx context.Context, tx pgx.Tx) context.Context {
 	return context.WithValue(ctx, TxKey, tx)
 }

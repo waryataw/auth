@@ -6,7 +6,7 @@ import (
 	"github.com/waryataw/auth/internal/models"
 )
 
-// Repository Интерфейс репозитория для операций с пользователем
+// Repository Интерфейс репозитория для операций с пользователем.
 type Repository interface {
 	Create(ctx context.Context, user *models.User) (int64, error)
 	Get(ctx context.Context, id int64, name string) (*models.User, error)

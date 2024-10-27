@@ -9,7 +9,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-// UpdateUser Обновление существующего пользователя
+// UpdateUser Обновление существующего пользователя.
 func (c Controller) UpdateUser(ctx context.Context, req *authv1.UpdateUserRequest) (*emptypb.Empty, error) {
 	err := c.userService.Update(ctx, auth.ToUserForUpdate(req))
 	if err != nil {

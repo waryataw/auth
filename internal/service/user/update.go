@@ -7,7 +7,7 @@ import (
 	"github.com/waryataw/auth/internal/models"
 )
 
-// Update Метод изменения пользователя
+// Update Метод изменения пользователя.
 func (s service) Update(ctx context.Context, user *models.User) error {
 	if !user.Role.IsValid() {
 		return fmt.Errorf("invalid user role")

@@ -26,7 +26,7 @@ func (r Role) IsValid() bool {
 	}
 }
 
-// User Пользователь
+// User Пользователь.
 type User struct {
 	ID              int64
 	Name            string

@@ -23,7 +23,7 @@ func ToGetUserResponse(user *models.User) *authv1.GetUserResponse {
 	}
 }
 
-// getRole Получение роли по идентификатору
+// getRole Получение роли по идентификатору.
 func getRole(id models.Role) *authv1.Role {
 	roles := []authv1.Role{
 		authv1.Role_UNKNOWN,
@@ -34,7 +34,7 @@ func getRole(id models.Role) *authv1.Role {
 	return &roles[id]
 }
 
-// ToUser Метод конвертации CreateUserRequest в пользователя
+// ToUser Метод конвертации CreateUserRequest в пользователя.
 func ToUser(req *authv1.CreateUserRequest) *models.User {
 	return &models.User{
 		Name:            req.Name,
@@ -45,7 +45,7 @@ func ToUser(req *authv1.CreateUserRequest) *models.User {
 	}
 }
 
-// ToUserForUpdate Метод конвертации UpdateUserRequest в пользователя
+// ToUserForUpdate Метод конвертации UpdateUserRequest в пользователя.
 func ToUserForUpdate(req *authv1.UpdateUserRequest) *models.User {
 	return &models.User{
 		ID:    req.GetId(),

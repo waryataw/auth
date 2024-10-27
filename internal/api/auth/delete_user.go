@@ -8,7 +8,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-// DeleteUser Удаление существующего пользователя
+// DeleteUser Удаление существующего пользователя.
 func (c Controller) DeleteUser(ctx context.Context, req *authv1.DeleteUserRequest) (*emptypb.Empty, error) {
 	err := c.userService.Delete(ctx, req.GetId())
 	if err != nil {

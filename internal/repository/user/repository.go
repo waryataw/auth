@@ -9,7 +9,7 @@ type repo struct {
 	db db.Client
 }
 
-// NewRepository Конструктор репозитория пользователя
+// NewRepository Конструктор репозитория пользователя.
 func NewRepository(db db.Client) user.Repository {
 	return &repo{db: db}
 }
