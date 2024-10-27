@@ -5,11 +5,12 @@ import (
 	"fmt"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/waryataw/auth/internal/client/db"
-	"github.com/waryataw/auth/internal/model"
+	"github.com/waryataw/auth/internal/models"
+	"github.com/waryataw/auth/pkg/client/db"
 )
 
-func (r *repo) Get(ctx context.Context, id int64, name string) (*model.User, error) {
+// Get Метод получения пользователя.
+func (r repo) Get(ctx context.Context, id int64, name string) (*models.User, error) {
 	builder := sq.Select(
 		"id",
 		"name",
@@ -40,7 +41,7 @@ func (r *repo) Get(ctx context.Context, id int64, name string) (*model.User, err
 		QueryRaw: sql,
 	}
 
-	var user model.User
+	var user models.User
 	err = r.db.DB().QueryRowContext(ctx, query, args...).
 		Scan(
 			&user.ID,

@@ -10,8 +10,8 @@ import (
 )
 
 // UpdateUser Обновление существующего пользователя
-func (i *Implementation) UpdateUser(ctx context.Context, req *authv1.UpdateUserRequest) (*emptypb.Empty, error) {
-	err := i.userService.Update(ctx, auth.ToUserForUpdate(req))
+func (c Controller) UpdateUser(ctx context.Context, req *authv1.UpdateUserRequest) (*emptypb.Empty, error) {
+	err := c.userService.Update(ctx, auth.ToUserForUpdate(req))
 	if err != nil {
 		return nil, fmt.Errorf("failed to update user: %w", err)
 	}

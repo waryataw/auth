@@ -5,8 +5,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/pkg/errors"
-
-	"github.com/waryataw/auth/internal/client/db"
+	"github.com/waryataw/auth/pkg/client/db"
 )
 
 type pgClient struct {

@@ -6,11 +6,12 @@ import (
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/waryataw/auth/internal/client/db"
-	"github.com/waryataw/auth/internal/model"
+	"github.com/waryataw/auth/internal/models"
+	"github.com/waryataw/auth/pkg/client/db"
 )
 
-func (r *repo) Create(ctx context.Context, user *model.User) (int64, error) {
+// Create Метод создания пользователя.
+func (r repo) Create(ctx context.Context, user *models.User) (int64, error) {
 	builder := sq.Insert("users").
 		Columns(
 			"name",

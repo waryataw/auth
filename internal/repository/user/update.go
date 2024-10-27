@@ -6,11 +6,12 @@ import (
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/waryataw/auth/internal/client/db"
-	"github.com/waryataw/auth/internal/model"
+	"github.com/waryataw/auth/internal/models"
+	"github.com/waryataw/auth/pkg/client/db"
 )
 
-func (r *repo) Update(ctx context.Context, user *model.User) error {
+// Update Метод изменения пользователя.
+func (r repo) Update(ctx context.Context, user *models.User) error {
 	builder := sq.Update("users").
 		Set("name", user.Name).
 		Set("email", user.Email).

@@ -4,15 +4,16 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/waryataw/auth/internal/model"
+	"github.com/waryataw/auth/internal/models"
 )
 
-func (s *userService) Create(ctx context.Context, user *model.User) (int64, error) {
+// Create Метод создания пользователя.
+func (s service) Create(ctx context.Context, user *models.User) (int64, error) {
 	if !user.Role.IsValid() {
 		return 0, fmt.Errorf("user role is not valid")
 	}
 
-	id, err := s.userRepository.Create(ctx, user)
+	id, err := s.repository.Create(ctx, user)
 	if err != nil {
 		return 0, fmt.Errorf("failed to create user: %w", err)
 	}

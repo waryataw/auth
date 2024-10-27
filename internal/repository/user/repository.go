@@ -1,8 +1,8 @@
 package user
 
 import (
-	"github.com/waryataw/auth/internal/client/db"
-	"github.com/waryataw/auth/internal/repository"
+	"github.com/waryataw/auth/internal/service/user"
+	"github.com/waryataw/auth/pkg/client/db"
 )
 
 type repo struct {
@@ -10,6 +10,6 @@ type repo struct {
 }
 
 // NewRepository Конструктор репозитория пользователя
-func NewRepository(db db.Client) repository.UserRepository {
+func NewRepository(db db.Client) user.Repository {
 	return &repo{db: db}
 }

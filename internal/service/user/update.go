@@ -4,15 +4,16 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/waryataw/auth/internal/model"
+	"github.com/waryataw/auth/internal/models"
 )
 
-func (s *userService) Update(ctx context.Context, user *model.User) error {
+// Update Метод изменения пользователя
+func (s service) Update(ctx context.Context, user *models.User) error {
 	if !user.Role.IsValid() {
 		return fmt.Errorf("invalid user role")
 	}
 
-	if err := s.userRepository.Update(ctx, user); err != nil {
+	if err := s.repository.Update(ctx, user); err != nil {
 		return fmt.Errorf("failed to update user: %w", err)
 	}
 

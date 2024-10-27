@@ -1,14 +1,13 @@
 package auth
 
 import (
-	"google.golang.org/protobuf/types/known/timestamppb"
-
-	"github.com/waryataw/auth/internal/model"
+	"github.com/waryataw/auth/internal/models"
 	"github.com/waryataw/auth/pkg/authv1"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // ToGetUserResponse Метод конвертации пользователя в ответ метода получения пользователя
-func ToGetUserResponse(user *model.User) *authv1.GetUserResponse {
+func ToGetUserResponse(user *models.User) *authv1.GetUserResponse {
 	var updatedAt *timestamppb.Timestamp
 	if user.UpdatedAt != nil {
 		updatedAt = timestamppb.New(*user.UpdatedAt)
@@ -25,7 +24,7 @@ func ToGetUserResponse(user *model.User) *authv1.GetUserResponse {
 }
 
 // getRole Получение роли по идентификатору
-func getRole(id model.Role) *authv1.Role {
+func getRole(id models.Role) *authv1.Role {
 	roles := []authv1.Role{
 		authv1.Role_UNKNOWN,
 		authv1.Role_USER,
@@ -36,22 +35,22 @@ func getRole(id model.Role) *authv1.Role {
 }
 
 // ToUser Метод конвертации CreateUserRequest в пользователя
-func ToUser(req *authv1.CreateUserRequest) *model.User {
-	return &model.User{
+func ToUser(req *authv1.CreateUserRequest) *models.User {
+	return &models.User{
 		Name:            req.Name,
 		Email:           req.Email,
 		Password:        req.Password,
 		PasswordConfirm: req.PasswordConfirm,
-		Role:            model.Role(req.Role),
+		Role:            models.Role(req.Role),
 	}
 }
 
 // ToUserForUpdate Метод конвертации UpdateUserRequest в пользователя
-func ToUserForUpdate(req *authv1.UpdateUserRequest) *model.User {
-	return &model.User{
+func ToUserForUpdate(req *authv1.UpdateUserRequest) *models.User {
+	return &models.User{
 		ID:    req.GetId(),
 		Name:  req.Name,
 		Email: req.Email,
-		Role:  model.Role(req.Role),
+		Role:  models.Role(req.Role),
 	}
 }

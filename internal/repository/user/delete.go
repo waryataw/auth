@@ -5,10 +5,11 @@ import (
 	"fmt"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/waryataw/auth/internal/client/db"
+	"github.com/waryataw/auth/pkg/client/db"
 )
 
-func (r *repo) Delete(ctx context.Context, id int64) error {
+// Delete Метод добавления пользователя.
+func (r repo) Delete(ctx context.Context, id int64) error {
 	builder := sq.
 		Delete("users").
 		Where(sq.Eq{"id": id})

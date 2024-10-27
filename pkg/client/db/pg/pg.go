@@ -6,13 +6,11 @@ import (
 	"log"
 
 	"github.com/georgysavva/scany/v2/pgxscan"
-
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
-
-	"github.com/waryataw/auth/internal/client/db"
-	"github.com/waryataw/auth/internal/client/db/prettier"
+	"github.com/waryataw/auth/pkg/client/db"
+	"github.com/waryataw/auth/pkg/client/db/prettier"
 )
 
 type key string

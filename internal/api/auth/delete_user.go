@@ -9,8 +9,8 @@ import (
 )
 
 // DeleteUser Удаление существующего пользователя
-func (i *Implementation) DeleteUser(ctx context.Context, req *authv1.DeleteUserRequest) (*emptypb.Empty, error) {
-	err := i.userService.Delete(ctx, req.GetId())
+func (c Controller) DeleteUser(ctx context.Context, req *authv1.DeleteUserRequest) (*emptypb.Empty, error) {
+	err := c.userService.Delete(ctx, req.GetId())
 	if err != nil {
 		return nil, fmt.Errorf("failed to delete user: %w", err)
 	}
