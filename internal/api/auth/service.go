@@ -1,19 +1,18 @@
 package auth
 
 import (
-	"github.com/waryataw/auth/internal/service"
 	"github.com/waryataw/auth/pkg/authv1"
 )
 
-// Implementation Имплементация Auth сервиса
-type Implementation struct {
+// Controller Имплементация Auth сервиса.
+type Controller struct {
 	authv1.UnimplementedAuthServiceServer
-	userService service.UserService
+	userService UserService
 }
 
-// NewImplementation Конструктор Имплементации Auth сервиса
-func NewImplementation(userService service.UserService) *Implementation {
-	return &Implementation{
+// NewController Конструктор Имплементации Auth сервиса.
+func NewController(userService UserService) *Controller {
+	return &Controller{
 		userService: userService,
 	}
 }

@@ -18,7 +18,7 @@ type pgConfig struct {
 	dsn string
 }
 
-// NewPGConfig Postgres config constructor
+// NewPGConfig Postgres config constructor.
 func NewPGConfig() (PGConfig, error) {
 	dsn := os.Getenv(dsnEnvName)
 	if len(dsn) == 0 {

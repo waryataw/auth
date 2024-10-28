@@ -6,22 +6,21 @@ import (
 	"log"
 	"net"
 
+	"github.com/waryataw/auth/internal/config"
+	"github.com/waryataw/auth/pkg/authv1"
+	"github.com/waryataw/auth/pkg/closer"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
-
-	"github.com/waryataw/auth/internal/closer"
-	"github.com/waryataw/auth/internal/config"
-	"github.com/waryataw/auth/pkg/authv1"
 )
 
-// App Приложение
+// App Приложение.
 type App struct {
 	serviceProvider *serviceProvider
 	grpcServer      *grpc.Server
 }
 
-// NewApp Конструктор приложения
+// NewApp Конструктор приложения.
 func NewApp(ctx context.Context) (*App, error) {
 	a := &App{}
 
@@ -33,7 +32,7 @@ func NewApp(ctx context.Context) (*App, error) {
 	return a, nil
 }
 
-// Run Запуск GRPC сервера
+// Run Запуск GRPC сервера.
 func (a *App) Run() error {
 	defer func() {
 		closer.CloseAll()
@@ -79,7 +78,7 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 
 	reflection.Register(a.grpcServer)
 
-	authv1.RegisterAuthServiceServer(a.grpcServer, a.serviceProvider.AuthImpl(ctx))
+	authv1.RegisterAuthServiceServer(a.grpcServer, a.serviceProvider.AuthController(ctx))
 
 	return nil
 }
@@ -87,12 +86,12 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 func (a *App) runGRPCServer() error {
 	log.Printf("GRPC server is running on %s", a.serviceProvider.GRPCConfig().Address())
 
-	list, err := net.Listen("tcp", a.serviceProvider.GRPCConfig().Address())
+	listener, err := net.Listen("tcp", a.serviceProvider.GRPCConfig().Address())
 	if err != nil {
 		return fmt.Errorf("failed to listen: %w", err)
 	}
 
-	err = a.grpcServer.Serve(list)
+	err = a.grpcServer.Serve(listener)
 	if err != nil {
 		return fmt.Errorf("failed to serve: %w", err)
 	}

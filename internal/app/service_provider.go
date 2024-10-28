@@ -5,16 +5,13 @@ import (
 	"log"
 
 	"github.com/waryataw/auth/internal/api/auth"
-
-	"github.com/waryataw/auth/internal/client/db"
-	"github.com/waryataw/auth/internal/client/db/pg"
-	"github.com/waryataw/auth/internal/client/db/transaction"
-	"github.com/waryataw/auth/internal/closer"
 	"github.com/waryataw/auth/internal/config"
-	"github.com/waryataw/auth/internal/repository"
 	userRepository "github.com/waryataw/auth/internal/repository/user"
-	"github.com/waryataw/auth/internal/service"
 	userService "github.com/waryataw/auth/internal/service/user"
+	"github.com/waryataw/auth/pkg/client/db"
+	"github.com/waryataw/auth/pkg/client/db/pg"
+	"github.com/waryataw/auth/pkg/client/db/transaction"
+	"github.com/waryataw/auth/pkg/closer"
 )
 
 type serviceProvider struct {
@@ -23,11 +20,11 @@ type serviceProvider struct {
 
 	dbClient       db.Client
 	txManager      db.TxManager
-	userRepository repository.UserRepository
+	userRepository userService.Repository
 
-	userService service.UserService
+	userService auth.UserService
 
-	userImpl *auth.Implementation
+	controller *auth.Controller
 }
 
 func newServiceProvider() *serviceProvider {
@@ -87,7 +84,7 @@ func (s *serviceProvider) TxManager(ctx context.Context) db.TxManager {
 	return s.txManager
 }
 
-func (s *serviceProvider) UserRepository(ctx context.Context) repository.UserRepository {
+func (s *serviceProvider) UserRepository(ctx context.Context) userService.Repository {
 	if s.userRepository == nil {
 		s.userRepository = userRepository.NewRepository(s.DBClient(ctx))
 	}
@@ -95,7 +92,7 @@ func (s *serviceProvider) UserRepository(ctx context.Context) repository.UserRep
 	return s.userRepository
 }
 
-func (s *serviceProvider) UserService(ctx context.Context) service.UserService {
+func (s *serviceProvider) UserService(ctx context.Context) auth.UserService {
 	if s.userService == nil {
 		s.userService = userService.NewService(
 			s.UserRepository(ctx),
@@ -105,10 +102,10 @@ func (s *serviceProvider) UserService(ctx context.Context) service.UserService {
 	return s.userService
 }
 
-func (s *serviceProvider) AuthImpl(ctx context.Context) *auth.Implementation {
-	if s.userImpl == nil {
-		s.userImpl = auth.NewImplementation(s.UserService(ctx))
+func (s *serviceProvider) AuthController(ctx context.Context) *auth.Controller {
+	if s.controller == nil {
+		s.controller = auth.NewController(s.UserService(ctx))
 	}
 
-	return s.userImpl
+	return s.controller
 }

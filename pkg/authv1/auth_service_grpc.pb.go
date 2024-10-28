@@ -8,6 +8,7 @@ package authv1
 
 import (
 	context "context"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -75,7 +76,7 @@ func (c *authServiceClient) DeleteUser(ctx context.Context, in *DeleteUserReques
 
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
-// for forward compatibility
+// for forward compatibility.
 type AuthServiceServer interface {
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
@@ -187,7 +188,7 @@ func _AuthService_DeleteUser_Handler(srv interface{}, ctx context.Context, dec f
 
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
+// and not to be introspected or modified (even as a copy).
 var AuthService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "auth_v1.AuthService",
 	HandlerType: (*AuthServiceServer)(nil),
