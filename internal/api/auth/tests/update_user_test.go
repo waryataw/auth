@@ -3,7 +3,6 @@ package tests
 import (
 	"context"
 	"fmt"
-	"google.golang.org/protobuf/types/known/emptypb"
 	"testing"
 
 	"github.com/brianvoe/gofakeit/v7"
@@ -13,6 +12,7 @@ import (
 	"github.com/waryataw/auth/internal/api/auth/mocks"
 	"github.com/waryataw/auth/internal/models"
 	"github.com/waryataw/auth/pkg/authv1"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func TestUpdateUser(t *testing.T) {
@@ -63,7 +63,7 @@ func TestUpdateUser(t *testing.T) {
 		args            args
 		want            *emptypb.Empty
 		err             error
-		noteServiceMock userServiceMockFunc
+		userServiceMock userServiceMockFunc
 	}{
 		{
 			name: "success case",
@@ -73,9 +73,10 @@ func TestUpdateUser(t *testing.T) {
 			},
 			want: result,
 			err:  nil,
-			noteServiceMock: func(mc *minimock.Controller) auth.UserService {
+			userServiceMock: func(mc *minimock.Controller) auth.UserService {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.UpdateMock.Expect(ctx, user).Return(nil)
+
 				return mock
 			},
 		},
@@ -87,9 +88,10 @@ func TestUpdateUser(t *testing.T) {
 			},
 			want: nil,
 			err:  fmt.Errorf("failed to update user: %w", serviceErr),
-			noteServiceMock: func(mc *minimock.Controller) auth.UserService {
+			userServiceMock: func(mc *minimock.Controller) auth.UserService {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.UpdateMock.Expect(ctx, user).Return(serviceErr)
+
 				return mock
 			},
 		},
@@ -100,7 +102,7 @@ func TestUpdateUser(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			mock := tt.noteServiceMock(mc)
+			mock := tt.userServiceMock(mc)
 			api := auth.NewController(mock)
 
 			response, err := api.UpdateUser(tt.args.ctx, tt.args.req)

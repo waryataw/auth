@@ -88,7 +88,7 @@ func TestGetUser(t *testing.T) {
 		args            args
 		want            *authv1.GetUserResponse
 		err             error
-		noteServiceMock userServiceMockFunc
+		userServiceMock userServiceMockFunc
 	}{
 		{
 			name: "success case by id",
@@ -98,9 +98,10 @@ func TestGetUser(t *testing.T) {
 			},
 			want: res,
 			err:  nil,
-			noteServiceMock: func(mc *minimock.Controller) auth.UserService {
+			userServiceMock: func(mc *minimock.Controller) auth.UserService {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.GetMock.Expect(ctx, id, "").Return(user, nil)
+
 				return mock
 			},
 		},
@@ -112,9 +113,10 @@ func TestGetUser(t *testing.T) {
 			},
 			want: nil,
 			err:  fmt.Errorf("failed to get user: %w", serviceErr),
-			noteServiceMock: func(mc *minimock.Controller) auth.UserService {
+			userServiceMock: func(mc *minimock.Controller) auth.UserService {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.GetMock.Expect(ctx, id, "").Return(nil, serviceErr)
+
 				return mock
 			},
 		},
@@ -126,9 +128,10 @@ func TestGetUser(t *testing.T) {
 			},
 			want: res,
 			err:  nil,
-			noteServiceMock: func(mc *minimock.Controller) auth.UserService {
+			userServiceMock: func(mc *minimock.Controller) auth.UserService {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.GetMock.Expect(ctx, 0, name).Return(user, nil)
+
 				return mock
 			},
 		},
@@ -140,9 +143,10 @@ func TestGetUser(t *testing.T) {
 			},
 			want: nil,
 			err:  fmt.Errorf("failed to get user: %w", serviceErr),
-			noteServiceMock: func(mc *minimock.Controller) auth.UserService {
+			userServiceMock: func(mc *minimock.Controller) auth.UserService {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.GetMock.Expect(ctx, 0, name).Return(nil, serviceErr)
+
 				return mock
 			},
 		},
@@ -153,7 +157,7 @@ func TestGetUser(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			mock := tt.noteServiceMock(mc)
+			mock := tt.userServiceMock(mc)
 			api := auth.NewController(mock)
 
 			response, err := api.GetUser(tt.args.ctx, tt.args.req)
