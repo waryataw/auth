@@ -8,7 +8,7 @@ import (
 
 	"github.com/waryataw/auth/internal/config"
 	"github.com/waryataw/auth/pkg/authv1"
-	"github.com/waryataw/auth/pkg/closer"
+	"github.com/waryataw/platform_common/pkg/closer"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
