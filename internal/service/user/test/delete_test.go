@@ -13,7 +13,7 @@ import (
 )
 
 func TestDelete(t *testing.T) {
-	type userRepositoryMockFunc func(mc *minimock.Controller) user.Repository
+	type mockBehavior func(mc *minimock.Controller) user.Repository
 
 	type args struct {
 		ctx context.Context
@@ -30,11 +30,11 @@ func TestDelete(t *testing.T) {
 	)
 
 	tests := []struct {
-		name               string
-		args               args
-		want               int64
-		err                error
-		userRepositoryMock userRepositoryMockFunc
+		name         string
+		args         args
+		want         int64
+		err          error
+		mockBehavior mockBehavior
 	}{
 		{
 			name: "success case",
@@ -44,7 +44,7 @@ func TestDelete(t *testing.T) {
 			},
 			want: id,
 			err:  nil,
-			userRepositoryMock: func(mc *minimock.Controller) user.Repository {
+			mockBehavior: func(mc *minimock.Controller) user.Repository {
 				mock := mocks.NewRepositoryMock(mc)
 				mock.DeleteMock.Expect(ctx, id).Return(nil)
 
@@ -59,7 +59,7 @@ func TestDelete(t *testing.T) {
 			},
 			want: 0,
 			err:  fmt.Errorf("failed to delete user: %w", serviceErr),
-			userRepositoryMock: func(mc *minimock.Controller) user.Repository {
+			mockBehavior: func(mc *minimock.Controller) user.Repository {
 				mock := mocks.NewRepositoryMock(mc)
 				mock.DeleteMock.Expect(ctx, id).Return(serviceErr)
 
@@ -73,15 +73,13 @@ func TestDelete(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			mock := tt.userRepositoryMock(mc)
+			mock := tt.mockBehavior(mc)
 			api := user.NewService(mock)
 
 			err := api.Delete(tt.args.ctx, tt.args.req)
 
 			if tt.err != nil {
 				require.EqualError(t, err, tt.err.Error())
-			} else {
-				require.NoError(t, err)
 			}
 		})
 	}

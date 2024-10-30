@@ -15,7 +15,7 @@ import (
 )
 
 func TestCreateUser(t *testing.T) {
-	type userServiceMockFunc func(mc *minimock.Controller) auth.UserService
+	type mockBehavior func(mc *minimock.Controller) auth.UserService
 
 	type args struct {
 		ctx context.Context
@@ -70,11 +70,11 @@ func TestCreateUser(t *testing.T) {
 	)
 
 	tests := []struct {
-		name            string
-		args            args
-		want            *authv1.CreateUserResponse
-		err             error
-		userServiceMock userServiceMockFunc
+		name         string
+		args         args
+		want         *authv1.CreateUserResponse
+		err          error
+		mockBehavior mockBehavior
 	}{
 		{
 			name: "success case",
@@ -84,7 +84,7 @@ func TestCreateUser(t *testing.T) {
 			},
 			want: res,
 			err:  nil,
-			userServiceMock: func(mc *minimock.Controller) auth.UserService {
+			mockBehavior: func(mc *minimock.Controller) auth.UserService {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.CreateMock.Expect(ctx, user).Return(id, nil)
 
@@ -99,7 +99,7 @@ func TestCreateUser(t *testing.T) {
 			},
 			want: nil,
 			err:  fmt.Errorf("failed to create user: %w", serviceErr),
-			userServiceMock: func(mc *minimock.Controller) auth.UserService {
+			mockBehavior: func(mc *minimock.Controller) auth.UserService {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.CreateMock.Expect(ctx, user).Return(0, serviceErr)
 
@@ -113,7 +113,7 @@ func TestCreateUser(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			mock := tt.userServiceMock(mc)
+			mock := tt.mockBehavior(mc)
 			api := auth.NewController(mock)
 
 			response, err := api.CreateUser(tt.args.ctx, tt.args.req)

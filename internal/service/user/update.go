@@ -10,7 +10,7 @@ import (
 // Update Метод изменения пользователя.
 func (s service) Update(ctx context.Context, user *models.User) error {
 	if !user.Role.IsValid() {
-		return fmt.Errorf("user role is not valid")
+		return fmt.Errorf("invalid user role")
 	}
 
 	if err := s.repository.Update(ctx, user); err != nil {

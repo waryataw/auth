@@ -16,7 +16,7 @@ import (
 )
 
 func TestGetUser(t *testing.T) {
-	type userServiceMockFunc func(mc *minimock.Controller) auth.UserService
+	type mockBehavior func(mc *minimock.Controller) auth.UserService
 
 	type args struct {
 		ctx context.Context
@@ -84,11 +84,11 @@ func TestGetUser(t *testing.T) {
 	)
 
 	tests := []struct {
-		name            string
-		args            args
-		want            *authv1.GetUserResponse
-		err             error
-		userServiceMock userServiceMockFunc
+		name         string
+		args         args
+		want         *authv1.GetUserResponse
+		err          error
+		mockBehavior mockBehavior
 	}{
 		{
 			name: "success case by id",
@@ -98,7 +98,7 @@ func TestGetUser(t *testing.T) {
 			},
 			want: res,
 			err:  nil,
-			userServiceMock: func(mc *minimock.Controller) auth.UserService {
+			mockBehavior: func(mc *minimock.Controller) auth.UserService {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.GetMock.Expect(ctx, id, "").Return(user, nil)
 
@@ -113,7 +113,7 @@ func TestGetUser(t *testing.T) {
 			},
 			want: nil,
 			err:  fmt.Errorf("failed to get user: %w", serviceErr),
-			userServiceMock: func(mc *minimock.Controller) auth.UserService {
+			mockBehavior: func(mc *minimock.Controller) auth.UserService {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.GetMock.Expect(ctx, id, "").Return(nil, serviceErr)
 
@@ -128,7 +128,7 @@ func TestGetUser(t *testing.T) {
 			},
 			want: res,
 			err:  nil,
-			userServiceMock: func(mc *minimock.Controller) auth.UserService {
+			mockBehavior: func(mc *minimock.Controller) auth.UserService {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.GetMock.Expect(ctx, 0, name).Return(user, nil)
 
@@ -143,7 +143,7 @@ func TestGetUser(t *testing.T) {
 			},
 			want: nil,
 			err:  fmt.Errorf("failed to get user: %w", serviceErr),
-			userServiceMock: func(mc *minimock.Controller) auth.UserService {
+			mockBehavior: func(mc *minimock.Controller) auth.UserService {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.GetMock.Expect(ctx, 0, name).Return(nil, serviceErr)
 
@@ -157,7 +157,7 @@ func TestGetUser(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			mock := tt.userServiceMock(mc)
+			mock := tt.mockBehavior(mc)
 			api := auth.NewController(mock)
 
 			response, err := api.GetUser(tt.args.ctx, tt.args.req)

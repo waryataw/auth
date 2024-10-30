@@ -6,6 +6,9 @@ import (
 	"github.com/waryataw/auth/internal/models"
 )
 
+//go:generate sh -c "rm -rf mocks && mkdir -p mocks"
+//go:generate ../../../bin/minimock -i github.com/waryataw/auth/internal/api/auth.* -o "./mocks/mocks.go"
+
 // UserService Сервис для работы с Пользователем.
 type UserService interface {
 	Create(ctx context.Context, user *models.User) (int64, error)

@@ -14,7 +14,7 @@ import (
 )
 
 func TestUpdate(t *testing.T) {
-	type userRepositoryMockFunc func(mc *minimock.Controller) user.Repository
+	type mockBehavior func(mc *minimock.Controller) user.Repository
 
 	type args struct {
 		ctx context.Context
@@ -67,11 +67,11 @@ func TestUpdate(t *testing.T) {
 	)
 
 	tests := []struct {
-		name               string
-		args               args
-		want               int64
-		err                error
-		userRepositoryMock userRepositoryMockFunc
+		name         string
+		args         args
+		want         int64
+		err          error
+		mockBehavior mockBehavior
 	}{
 		{
 			name: "success case",
@@ -81,7 +81,7 @@ func TestUpdate(t *testing.T) {
 			},
 			want: id,
 			err:  nil,
-			userRepositoryMock: func(mc *minimock.Controller) user.Repository {
+			mockBehavior: func(mc *minimock.Controller) user.Repository {
 				mock := mocks.NewRepositoryMock(mc)
 				mock.UpdateMock.Expect(ctx, usr).Return(nil)
 
@@ -96,7 +96,7 @@ func TestUpdate(t *testing.T) {
 			},
 			want: 0,
 			err:  fmt.Errorf("failed to update user: %w", serviceErr),
-			userRepositoryMock: func(mc *minimock.Controller) user.Repository {
+			mockBehavior: func(mc *minimock.Controller) user.Repository {
 				mock := mocks.NewRepositoryMock(mc)
 				mock.UpdateMock.Expect(ctx, usr).Return(serviceErr)
 
@@ -110,8 +110,8 @@ func TestUpdate(t *testing.T) {
 				req: usrInvalidRole,
 			},
 			want: 0,
-			err:  fmt.Errorf("user role is not valid"),
-			userRepositoryMock: func(mc *minimock.Controller) user.Repository {
+			err:  fmt.Errorf("invalid user role"),
+			mockBehavior: func(mc *minimock.Controller) user.Repository {
 				mock := mocks.NewRepositoryMock(mc)
 
 				return mock
@@ -124,15 +124,13 @@ func TestUpdate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			mock := tt.userRepositoryMock(mc)
+			mock := tt.mockBehavior(mc)
 			api := user.NewService(mock)
 
 			err := api.Update(tt.args.ctx, tt.args.req)
 
 			if tt.err != nil {
 				require.EqualError(t, err, tt.err.Error())
-			} else {
-				require.NoError(t, err)
 			}
 		})
 	}

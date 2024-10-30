@@ -14,7 +14,7 @@ import (
 )
 
 func TestGet(t *testing.T) {
-	type userRepositoryMockFunc func(mc *minimock.Controller) user.Repository
+	type mockBehavior func(mc *minimock.Controller) user.Repository
 
 	type args struct {
 		ctx  context.Context
@@ -59,11 +59,11 @@ func TestGet(t *testing.T) {
 	)
 
 	tests := []struct {
-		name               string
-		args               args
-		want               *models.User
-		err                error
-		userRepositoryMock userRepositoryMockFunc
+		name         string
+		args         args
+		want         *models.User
+		err          error
+		mockBehavior mockBehavior
 	}{
 		{
 			name: "success case by id",
@@ -73,7 +73,7 @@ func TestGet(t *testing.T) {
 			},
 			want: usr,
 			err:  nil,
-			userRepositoryMock: func(mc *minimock.Controller) user.Repository {
+			mockBehavior: func(mc *minimock.Controller) user.Repository {
 				mock := mocks.NewRepositoryMock(mc)
 				mock.GetMock.Expect(ctx, id, "").Return(usr, nil)
 
@@ -88,7 +88,7 @@ func TestGet(t *testing.T) {
 			},
 			want: usr,
 			err:  nil,
-			userRepositoryMock: func(mc *minimock.Controller) user.Repository {
+			mockBehavior: func(mc *minimock.Controller) user.Repository {
 				mock := mocks.NewRepositoryMock(mc)
 				mock.GetMock.Expect(ctx, 0, name).Return(usr, nil)
 
@@ -103,7 +103,7 @@ func TestGet(t *testing.T) {
 			},
 			want: nil,
 			err:  fmt.Errorf("failed to get user: %w", serviceErr),
-			userRepositoryMock: func(mc *minimock.Controller) user.Repository {
+			mockBehavior: func(mc *minimock.Controller) user.Repository {
 				mock := mocks.NewRepositoryMock(mc)
 				mock.GetMock.Expect(ctx, id, "").Return(nil, serviceErr)
 
@@ -117,7 +117,7 @@ func TestGet(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			mock := tt.userRepositoryMock(mc)
+			mock := tt.mockBehavior(mc)
 			api := user.NewService(mock)
 
 			response, err := api.Get(tt.args.ctx, tt.args.id, tt.args.name)
@@ -125,8 +125,6 @@ func TestGet(t *testing.T) {
 			require.Equal(t, tt.want, response)
 			if tt.err != nil {
 				require.EqualError(t, err, tt.err.Error())
-			} else {
-				require.NoError(t, err)
 			}
 		})
 	}

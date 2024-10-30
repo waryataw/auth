@@ -14,7 +14,7 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	type userRepositoryMockFunc func(mc *minimock.Controller) user.Repository
+	type mockBehavior func(mc *minimock.Controller) user.Repository
 
 	type args struct {
 		ctx context.Context
@@ -65,11 +65,11 @@ func TestCreate(t *testing.T) {
 	)
 
 	tests := []struct {
-		name               string
-		args               args
-		want               int64
-		err                error
-		userRepositoryMock userRepositoryMockFunc
+		name         string
+		args         args
+		want         int64
+		err          error
+		mockBehavior mockBehavior
 	}{
 		{
 			name: "success case",
@@ -79,7 +79,7 @@ func TestCreate(t *testing.T) {
 			},
 			want: id,
 			err:  nil,
-			userRepositoryMock: func(mc *minimock.Controller) user.Repository {
+			mockBehavior: func(mc *minimock.Controller) user.Repository {
 				mock := mocks.NewRepositoryMock(mc)
 				mock.CreateMock.Expect(ctx, usr).Return(id, nil)
 
@@ -94,7 +94,7 @@ func TestCreate(t *testing.T) {
 			},
 			want: 0,
 			err:  fmt.Errorf("failed to create user: %w", serviceErr),
-			userRepositoryMock: func(mc *minimock.Controller) user.Repository {
+			mockBehavior: func(mc *minimock.Controller) user.Repository {
 				mock := mocks.NewRepositoryMock(mc)
 				mock.CreateMock.Expect(ctx, usr).Return(0, serviceErr)
 
@@ -108,8 +108,8 @@ func TestCreate(t *testing.T) {
 				req: usrInvalidRole,
 			},
 			want: 0,
-			err:  fmt.Errorf("user role is not valid"),
-			userRepositoryMock: func(mc *minimock.Controller) user.Repository {
+			err:  fmt.Errorf("invalid user role"),
+			mockBehavior: func(mc *minimock.Controller) user.Repository {
 				mock := mocks.NewRepositoryMock(mc)
 
 				return mock
@@ -122,7 +122,7 @@ func TestCreate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			mock := tt.userRepositoryMock(mc)
+			mock := tt.mockBehavior(mc)
 			api := user.NewService(mock)
 
 			response, err := api.Create(tt.args.ctx, tt.args.req)

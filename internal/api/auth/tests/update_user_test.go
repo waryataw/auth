@@ -16,7 +16,7 @@ import (
 )
 
 func TestUpdateUser(t *testing.T) {
-	type userServiceMockFunc func(mc *minimock.Controller) auth.UserService
+	type mockBehavior func(mc *minimock.Controller) auth.UserService
 
 	type args struct {
 		ctx context.Context
@@ -59,11 +59,11 @@ func TestUpdateUser(t *testing.T) {
 	)
 
 	tests := []struct {
-		name            string
-		args            args
-		want            *emptypb.Empty
-		err             error
-		userServiceMock userServiceMockFunc
+		name         string
+		args         args
+		want         *emptypb.Empty
+		err          error
+		mockBehavior mockBehavior
 	}{
 		{
 			name: "success case",
@@ -73,7 +73,7 @@ func TestUpdateUser(t *testing.T) {
 			},
 			want: result,
 			err:  nil,
-			userServiceMock: func(mc *minimock.Controller) auth.UserService {
+			mockBehavior: func(mc *minimock.Controller) auth.UserService {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.UpdateMock.Expect(ctx, user).Return(nil)
 
@@ -88,7 +88,7 @@ func TestUpdateUser(t *testing.T) {
 			},
 			want: nil,
 			err:  fmt.Errorf("failed to update user: %w", serviceErr),
-			userServiceMock: func(mc *minimock.Controller) auth.UserService {
+			mockBehavior: func(mc *minimock.Controller) auth.UserService {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.UpdateMock.Expect(ctx, user).Return(serviceErr)
 
@@ -102,7 +102,7 @@ func TestUpdateUser(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			mock := tt.userServiceMock(mc)
+			mock := tt.mockBehavior(mc)
 			api := auth.NewController(mock)
 
 			response, err := api.UpdateUser(tt.args.ctx, tt.args.req)
