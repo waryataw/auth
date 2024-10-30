@@ -52,7 +52,7 @@ func TestDelete(t *testing.T) {
 			},
 		},
 		{
-			name: "service error case",
+			name: "repo error case",
 			args: args{
 				ctx: ctx,
 				req: id,

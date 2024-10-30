@@ -96,7 +96,7 @@ func TestGet(t *testing.T) {
 			},
 		},
 		{
-			name: "service error case",
+			name: "repo error case",
 			args: args{
 				ctx: ctx,
 				id:  id,

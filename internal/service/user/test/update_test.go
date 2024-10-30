@@ -89,7 +89,7 @@ func TestUpdate(t *testing.T) {
 			},
 		},
 		{
-			name: "service error case",
+			name: "repo error case",
 			args: args{
 				ctx: ctx,
 				req: usr,
@@ -104,7 +104,7 @@ func TestUpdate(t *testing.T) {
 			},
 		},
 		{
-			name: "service error invalid role case",
+			name: "repo error invalid role case",
 			args: args{
 				ctx: ctx,
 				req: usrInvalidRole,
