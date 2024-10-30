@@ -6,7 +6,7 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/waryataw/auth/internal/models"
-	"github.com/waryataw/auth/pkg/client/db"
+	"github.com/waryataw/platform_common/pkg/db"
 )
 
 // Get Метод получения пользователя.

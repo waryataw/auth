@@ -10,7 +10,7 @@ import (
 // Create Метод создания пользователя.
 func (s service) Create(ctx context.Context, user *models.User) (int64, error) {
 	if !user.Role.IsValid() {
-		return 0, fmt.Errorf("user role is not valid")
+		return 0, fmt.Errorf("invalid user role")
 	}
 
 	id, err := s.repository.Create(ctx, user)

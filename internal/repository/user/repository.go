@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/waryataw/auth/internal/service/user"
-	"github.com/waryataw/auth/pkg/client/db"
+	"github.com/waryataw/platform_common/pkg/db"
 )
 
 type repo struct {

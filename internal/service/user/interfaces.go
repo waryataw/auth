@@ -6,6 +6,9 @@ import (
 	"github.com/waryataw/auth/internal/models"
 )
 
+//go:generate sh -c "rm -rf mocks && mkdir -p mocks"
+//go:generate ../../../bin/minimock -i github.com/waryataw/auth/internal/service/user.* -o "./mocks/mocks.go"
+
 // Repository Интерфейс репозитория для операций с пользователем.
 type Repository interface {
 	Create(ctx context.Context, user *models.User) (int64, error)

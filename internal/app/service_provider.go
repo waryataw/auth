@@ -8,10 +8,10 @@ import (
 	"github.com/waryataw/auth/internal/config"
 	userRepository "github.com/waryataw/auth/internal/repository/user"
 	userService "github.com/waryataw/auth/internal/service/user"
-	"github.com/waryataw/auth/pkg/client/db"
-	"github.com/waryataw/auth/pkg/client/db/pg"
-	"github.com/waryataw/auth/pkg/client/db/transaction"
-	"github.com/waryataw/auth/pkg/closer"
+	"github.com/waryataw/platform_common/pkg/closer"
+	"github.com/waryataw/platform_common/pkg/db"
+	"github.com/waryataw/platform_common/pkg/db/pg"
+	"github.com/waryataw/platform_common/pkg/db/transaction"
 )
 
 type serviceProvider struct {
