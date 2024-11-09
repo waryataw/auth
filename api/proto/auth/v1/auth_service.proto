@@ -7,10 +7,29 @@ import "auth_user_roles.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "validate/validate.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 
 option go_package = "github.com/waryataw/auth/pkg/authv1";
 
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Auth API"
+    version: "1.0.0"
+    contact: {
+      name: "Anton Waryat"
+      email: "waryataw@gmail.com"
+    };
+  };
+
+  host: "localhost:8080",
+  schemes: HTTP,
+  schemes: HTTPS,
+  consumes: "application/json",
+  produces: "application/json",
+};
+
 service AuthService {
+  // Создание нового пользователя
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse){
     option (google.api.http) = {
       post: "/user/v1"
@@ -18,6 +37,7 @@ service AuthService {
     };
   }
 
+  // Получение существующего пользователя
   rpc GetUser(GetUserRequest) returns (GetUserResponse){
     option (google.api.http) = {
       get: "/user/v1/{id}"
@@ -27,12 +47,15 @@ service AuthService {
     };
   }
 
+  // Изменение существующего пользователя
   rpc UpdateUser(UpdateUserRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
       patch: "/user/v1/{id}"
       body: "*"
     };
   }
+
+  // Удаление существующего пользователя
   rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
       delete: "/user/v1/{id}"
@@ -41,47 +64,66 @@ service AuthService {
 }
 
 message CreateUserRequest {
+  // Имя
   string name = 1 [(validate.rules).string = {min_len: 5, max_len: 50}];
+  // Email
   string email = 2 [(validate.rules).string.email = true];
+  // Пароль
   string password = 3 [(validate.rules).string = {
     min_len: 8,
     max_len: 64,
     pattern: "^(.*[a-z].*)(.*[A-Z].*)(.*\\d.*)$"
   }];
+  // Подтверждение пароля
   string password_confirm = 4[(validate.rules).string = {
     min_len: 8,
     max_len: 64,
     pattern: "^(.*[a-z].*)(.*[A-Z].*)(.*\\d.*)$"
   }];
+  // Роль(Пользователь или Админ)
   Role role = 5 [(validate.rules).enum = {in: [1, 2]}];
 }
 
 message CreateUserResponse {
+  // Идентификатор
   int64 id = 1;
 }
 
 message GetUserRequest {
   oneof query {
+    // Идентификатор
     int64 id = 1[(validate.rules).int64.gte = 0];
+    // Имя
     string name = 2[(validate.rules).string = {min_len: 5, max_len: 50}];
   }
 }
 message GetUserResponse {
+  // Идентификатор
   int64 id = 1;
+  // Имя
   string name = 2;
+  // Email
   string email = 3;
+  // Роль
   Role role = 4;
+  // Дата создания
   google.protobuf.Timestamp created_at = 5;
+  // Дата изменения
   google.protobuf.Timestamp updated_at = 6;
 }
 
 message UpdateUserRequest {
+  // Идентификатор
   int64 id = 1[(validate.rules).int64.gte = 0];
+  // Имя
   string name = 2 [(validate.rules).string = {min_len: 5, max_len: 50}];
+  // Email
   string email = 3 [(validate.rules).string.email = true];
+  // Роль
   Role role = 4 [(validate.rules).enum = {in: [1, 2]}];
 }
 
 message DeleteUserRequest {
+  // Идентификатор
   int64 id = 1[(validate.rules).int64.gte = 0];
 }

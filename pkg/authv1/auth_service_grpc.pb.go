@@ -24,9 +24,13 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
+	// Создание нового пользователя
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
+	// Получение существующего пользователя
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
+	// Изменение существующего пользователя
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Удаление существующего пользователя
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -78,9 +82,13 @@ func (c *authServiceClient) DeleteUser(ctx context.Context, in *DeleteUserReques
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
 type AuthServiceServer interface {
+	// Создание нового пользователя
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
+	// Получение существующего пользователя
 	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
+	// Изменение существующего пользователя
 	UpdateUser(context.Context, *UpdateUserRequest) (*emptypb.Empty, error)
+	// Удаление существующего пользователя
 	DeleteUser(context.Context, *DeleteUserRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }

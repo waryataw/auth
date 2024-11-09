@@ -25,6 +25,8 @@ install-deps:
 	GOBIN=$(LOCAL_BIN) go install github.com/gojuno/minimock/v3/cmd/minimock@v3.4.1
 	GOBIN=$(LOCAL_BIN) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.23.0
 	GOBIN=$(LOCAL_BIN) go install github.com/envoyproxy/protoc-gen-validate@v1.1.0
+	GOBIN=$(LOCAL_BIN) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.20.0
+	GOBIN=$(LOCAL_BIN) go install github.com/rakyll/statik@v0.1.7
 
 get-deps:
 	go get -u google.golang.org/protobuf/cmd/protoc-gen-go
@@ -32,7 +34,9 @@ get-deps:
 
 
 generate:
+	mkdir -p pkg/swagger
 	make generate-auth-api
+	$(LOCAL_BIN)/statik -src=pkg/swagger/ -include='*.css,*.html,*.js,*.json,*.png'
 
 generate-auth-api:
 	mkdir -p pkg/authv1
@@ -45,6 +49,8 @@ generate-auth-api:
     --plugin=protoc-gen-grpc-gateway=bin/protoc-gen-grpc-gateway \
     --validate_out lang=go:pkg/authv1 --validate_opt=paths=source_relative \
     --plugin=protoc-gen-validate=bin/protoc-gen-validate \
+	--openapiv2_out=allow_merge=true,merge_file_name=api:pkg/swagger \
+	--plugin=protoc-gen-openapiv2=bin/protoc-gen-openapiv2 \
 	api/proto/auth/v1/auth_service.proto \
 	api/proto/auth/v1/auth_user_roles.proto
 
