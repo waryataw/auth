@@ -24,6 +24,7 @@ install-deps:
 	GOBIN=$(LOCAL_BIN) go install github.com/daixiang0/gci@v0.13.5
 	GOBIN=$(LOCAL_BIN) go install github.com/gojuno/minimock/v3/cmd/minimock@v3.4.1
 	GOBIN=$(LOCAL_BIN) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.23.0
+	GOBIN=$(LOCAL_BIN) go install github.com/envoyproxy/protoc-gen-validate@v1.1.0
 
 get-deps:
 	go get -u google.golang.org/protobuf/cmd/protoc-gen-go
@@ -42,6 +43,8 @@ generate-auth-api:
 	--plugin=protoc-gen-go-grpc=bin/protoc-gen-go-grpc \
 	--grpc-gateway_out=pkg/authv1 --grpc-gateway_opt=paths=source_relative \
     --plugin=protoc-gen-grpc-gateway=bin/protoc-gen-grpc-gateway \
+    --validate_out lang=go:pkg/authv1 --validate_opt=paths=source_relative \
+    --plugin=protoc-gen-validate=bin/protoc-gen-validate \
 	api/proto/auth/v1/auth_service.proto \
 	api/proto/auth/v1/auth_user_roles.proto
 

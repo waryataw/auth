@@ -12,6 +12,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	cors "github.com/rs/cors"
 	"github.com/waryataw/auth/internal/config"
+	"github.com/waryataw/auth/internal/interceptor"
 	"github.com/waryataw/auth/pkg/authv1"
 	"github.com/waryataw/platform_common/pkg/closer"
 	"google.golang.org/grpc"
@@ -104,7 +105,10 @@ func (a *App) initServiceProvider(_ context.Context) error {
 }
 
 func (a *App) initGRPCServer(ctx context.Context) error {
-	a.grpcServer = grpc.NewServer(grpc.Creds(insecure.NewCredentials()))
+	a.grpcServer = grpc.NewServer(
+		grpc.Creds(insecure.NewCredentials()),
+		grpc.UnaryInterceptor(interceptor.ValidateInterceptor),
+	)
 
 	reflection.Register(a.grpcServer)
 
