@@ -4,15 +4,39 @@ package auth_v1;
 
 import "google/protobuf/empty.proto";
 import "auth_user_roles.proto";
+import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/waryataw/auth/pkg/authv1";
 
 service AuthService {
-  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
-  rpc GetUser(GetUserRequest) returns (GetUserResponse);
-  rpc UpdateUser(UpdateUserRequest) returns (google.protobuf.Empty);
-  rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse){
+    option (google.api.http) = {
+      post: "/user/v1"
+      body: "*"
+    };
+  }
+
+  rpc GetUser(GetUserRequest) returns (GetUserResponse){
+    option (google.api.http) = {
+      get: "/user/v1/{id}"
+      additional_bindings {
+        get: "/user/v1/by-name/{name}"
+      }
+    };
+  }
+
+  rpc UpdateUser(UpdateUserRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      patch: "/user/v1/{id}"
+      body: "*"
+    };
+  }
+  rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      delete: "/user/v1/{id}"
+    };
+  }
 }
 
 message CreateUserRequest {
