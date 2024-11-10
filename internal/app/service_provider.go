@@ -4,10 +4,15 @@ import (
 	"context"
 	"log"
 
+	"github.com/IBM/sarama"
 	"github.com/waryataw/auth/internal/api/auth"
+	"github.com/waryataw/auth/internal/client/kafka"
+	"github.com/waryataw/auth/internal/client/kafka/consumer"
 	"github.com/waryataw/auth/internal/config"
 	"github.com/waryataw/auth/internal/config/env"
 	userRepository "github.com/waryataw/auth/internal/repository/user"
+	consumer2 "github.com/waryataw/auth/internal/service/consumer"
+	"github.com/waryataw/auth/internal/service/consumer/user_saver"
 	userService "github.com/waryataw/auth/internal/service/user"
 	"github.com/waryataw/platform_common/pkg/closer"
 	"github.com/waryataw/platform_common/pkg/db"
@@ -16,16 +21,23 @@ import (
 )
 
 type serviceProvider struct {
-	pgConfig      config.PGConfig
-	grpcConfig    config.GRPCConfig
-	httpConfig    config.HTTPConfig
-	swaggerConfig config.SwaggerConfig
+	pgConfig            config.PGConfig
+	grpcConfig          config.GRPCConfig
+	httpConfig          config.HTTPConfig
+	kafkaConsumerConfig config.KafkaConsumerConfig
+	swaggerConfig       config.SwaggerConfig
 
 	dbClient       db.Client
 	txManager      db.TxManager
 	userRepository userService.Repository
 
 	userService auth.UserService
+
+	userSaverConsumer consumer2.Service
+
+	consumer             kafka.Consumer
+	consumerGroup        sarama.ConsumerGroup
+	consumerGroupHandler *consumer.GroupHandler
 
 	controller *auth.Controller
 }
@@ -71,6 +83,19 @@ func (s *serviceProvider) HTTPConfig() config.HTTPConfig {
 	}
 
 	return s.httpConfig
+}
+
+func (s *serviceProvider) KafkaConsumerConfig() config.KafkaConsumerConfig {
+	if s.kafkaConsumerConfig == nil {
+		cfg, err := env.NewKafkaConsumerConfig()
+		if err != nil {
+			log.Fatalf("failed to get kafka consumer config: %s", err.Error())
+		}
+
+		s.kafkaConsumerConfig = cfg
+	}
+
+	return s.kafkaConsumerConfig
 }
 
 func (s *serviceProvider) SwaggerConfig() config.SwaggerConfig {
@@ -121,6 +146,17 @@ func (s *serviceProvider) UserRepository(ctx context.Context) userService.Reposi
 	return s.userRepository
 }
 
+func (s *serviceProvider) UserSaverConsumer(ctx context.Context) consumer2.Service {
+	if s.userSaverConsumer == nil {
+		s.userSaverConsumer = user_saver.NewService(
+			s.UserRepository(ctx),
+			s.Consumer(),
+		)
+	}
+
+	return s.userSaverConsumer
+}
+
 func (s *serviceProvider) UserService(ctx context.Context) auth.UserService {
 	if s.userService == nil {
 		s.userService = userService.NewService(
@@ -137,4 +173,41 @@ func (s *serviceProvider) AuthController(ctx context.Context) *auth.Controller {
 	}
 
 	return s.controller
+}
+
+func (s *serviceProvider) Consumer() kafka.Consumer {
+	if s.consumer == nil {
+		s.consumer = consumer.NewConsumer(
+			s.ConsumerGroup(),
+			s.ConsumerGroupHandler(),
+		)
+		closer.Add(s.consumer.Close)
+	}
+
+	return s.consumer
+}
+
+func (s *serviceProvider) ConsumerGroup() sarama.ConsumerGroup {
+	if s.consumerGroup == nil {
+		consumerGroup, err := sarama.NewConsumerGroup(
+			s.KafkaConsumerConfig().Brokers(),
+			s.KafkaConsumerConfig().GroupID(),
+			s.KafkaConsumerConfig().Config(),
+		)
+		if err != nil {
+			log.Fatalf("failed to create consumer group: %v", err)
+		}
+
+		s.consumerGroup = consumerGroup
+	}
+
+	return s.consumerGroup
+}
+
+func (s *serviceProvider) ConsumerGroupHandler() *consumer.GroupHandler {
+	if s.consumerGroupHandler == nil {
+		s.consumerGroupHandler = consumer.NewGroupHandler()
+	}
+
+	return s.consumerGroupHandler
 }
