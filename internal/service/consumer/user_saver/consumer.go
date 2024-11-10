@@ -3,9 +3,9 @@ package user_saver
 import (
 	"context"
 
-	"github.com/waryataw/auth/internal/client/kafka"
 	def "github.com/waryataw/auth/internal/service/consumer"
 	"github.com/waryataw/auth/internal/service/user"
+	"github.com/waryataw/platform_common/pkg/kafka"
 )
 
 var _ def.Service = (*service)(nil)

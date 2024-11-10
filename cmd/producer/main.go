@@ -5,10 +5,9 @@ import (
 	"log"
 	"strings"
 
+	"github.com/IBM/sarama"
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/waryataw/auth/internal/models"
-
-	"github.com/IBM/sarama"
 )
 
 const (

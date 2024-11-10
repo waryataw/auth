@@ -6,18 +6,18 @@ import (
 
 	"github.com/IBM/sarama"
 	"github.com/waryataw/auth/internal/api/auth"
-	"github.com/waryataw/auth/internal/client/kafka"
-	"github.com/waryataw/auth/internal/client/kafka/consumer"
 	"github.com/waryataw/auth/internal/config"
 	"github.com/waryataw/auth/internal/config/env"
 	userRepository "github.com/waryataw/auth/internal/repository/user"
-	consumer2 "github.com/waryataw/auth/internal/service/consumer"
+	serviceConsumer "github.com/waryataw/auth/internal/service/consumer"
 	"github.com/waryataw/auth/internal/service/consumer/user_saver"
 	userService "github.com/waryataw/auth/internal/service/user"
 	"github.com/waryataw/platform_common/pkg/closer"
 	"github.com/waryataw/platform_common/pkg/db"
 	"github.com/waryataw/platform_common/pkg/db/pg"
 	"github.com/waryataw/platform_common/pkg/db/transaction"
+	"github.com/waryataw/platform_common/pkg/kafka"
+	"github.com/waryataw/platform_common/pkg/kafka/consumer"
 )
 
 type serviceProvider struct {
@@ -33,7 +33,7 @@ type serviceProvider struct {
 
 	userService auth.UserService
 
-	userSaverConsumer consumer2.Service
+	userSaverConsumer serviceConsumer.Service
 
 	consumer             kafka.Consumer
 	consumerGroup        sarama.ConsumerGroup
@@ -146,7 +146,7 @@ func (s *serviceProvider) UserRepository(ctx context.Context) userService.Reposi
 	return s.userRepository
 }
 
-func (s *serviceProvider) UserSaverConsumer(ctx context.Context) consumer2.Service {
+func (s *serviceProvider) UserSaverConsumer(ctx context.Context) serviceConsumer.Service {
 	if s.userSaverConsumer == nil {
 		s.userSaverConsumer = user_saver.NewService(
 			s.UserRepository(ctx),
