@@ -6,6 +6,7 @@ import (
 
 	"github.com/waryataw/auth/internal/api/auth"
 	"github.com/waryataw/auth/internal/config"
+	"github.com/waryataw/auth/internal/config/env"
 	userRepository "github.com/waryataw/auth/internal/repository/user"
 	userService "github.com/waryataw/auth/internal/service/user"
 	"github.com/waryataw/platform_common/pkg/closer"
@@ -35,7 +36,7 @@ func newServiceProvider() *serviceProvider {
 
 func (s *serviceProvider) PGConfig() config.PGConfig {
 	if s.pgConfig == nil {
-		cfg, err := config.NewPGConfig()
+		cfg, err := env.NewPGConfig()
 		if err != nil {
 			log.Fatalf("failed to get pg config: %s", err.Error())
 		}
@@ -48,7 +49,7 @@ func (s *serviceProvider) PGConfig() config.PGConfig {
 
 func (s *serviceProvider) GRPCConfig() config.GRPCConfig {
 	if s.grpcConfig == nil {
-		cfg, err := config.NewGRPCConfig()
+		cfg, err := env.NewGRPCConfig()
 		if err != nil {
 			log.Fatalf("failed to get grpc config: %s", err.Error())
 		}
@@ -61,7 +62,7 @@ func (s *serviceProvider) GRPCConfig() config.GRPCConfig {
 
 func (s *serviceProvider) HTTPConfig() config.HTTPConfig {
 	if s.httpConfig == nil {
-		cfg, err := config.NewHTTPConfig()
+		cfg, err := env.NewHTTPConfig()
 		if err != nil {
 			log.Fatalf("failed to get http config: %s", err.Error())
 		}
@@ -74,7 +75,7 @@ func (s *serviceProvider) HTTPConfig() config.HTTPConfig {
 
 func (s *serviceProvider) SwaggerConfig() config.SwaggerConfig {
 	if s.swaggerConfig == nil {
-		cfg, err := config.NewSwaggerConfig()
+		cfg, err := env.NewSwaggerConfig()
 		if err != nil {
 			log.Fatalf("failed to get swagger config: %s", err.Error())
 		}

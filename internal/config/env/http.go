@@ -1,10 +1,11 @@
-package config
+package env
 
 import (
 	"net"
 	"os"
 
 	"github.com/pkg/errors"
+	"github.com/waryataw/auth/internal/config"
 )
 
 const (
@@ -12,18 +13,13 @@ const (
 	httpPortEnvName = "HTTP_PORT"
 )
 
-// HTTPConfig Http config
-type HTTPConfig interface {
-	Address() string
-}
-
 type httpConfig struct {
 	host string
 	port string
 }
 
 // NewHTTPConfig Http config конструктор
-func NewHTTPConfig() (HTTPConfig, error) {
+func NewHTTPConfig() (config.HTTPConfig, error) {
 	host := os.Getenv(httpHostEnvName)
 	if len(host) == 0 {
 		return nil, errors.New("http host not found")

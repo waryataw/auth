@@ -1,10 +1,11 @@
-package config
+package env
 
 import (
 	"net"
 	"os"
 
 	"github.com/pkg/errors"
+	"github.com/waryataw/auth/internal/config"
 )
 
 const (
@@ -12,18 +13,13 @@ const (
 	swaggerPortEnvName = "SWAGGER_PORT"
 )
 
-// SwaggerConfig Swagger config
-type SwaggerConfig interface {
-	Address() string
-}
-
 type swaggerConfig struct {
 	host string
 	port string
 }
 
 // NewSwaggerConfig Swagger config конструктор
-func NewSwaggerConfig() (SwaggerConfig, error) {
+func NewSwaggerConfig() (config.SwaggerConfig, error) {
 	host := os.Getenv(swaggerHostEnvName)
 	if len(host) == 0 {
 		return nil, errors.New("swagger host not found")
