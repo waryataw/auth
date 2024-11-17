@@ -8,19 +8,19 @@ import (
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/gojuno/minimock/v3"
 	"github.com/stretchr/testify/require"
-	"github.com/waryataw/auth/internal/api/auth"
-	"github.com/waryataw/auth/internal/api/auth/mocks"
+	"github.com/waryataw/auth/internal/api/user"
+	"github.com/waryataw/auth/internal/api/user/mocks"
 	"github.com/waryataw/auth/internal/models"
-	"github.com/waryataw/auth/pkg/authv1"
+	"github.com/waryataw/auth/pkg/userv1"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func TestUpdateUser(t *testing.T) {
-	type mockBehavior func(mc *minimock.Controller) auth.UserService
+	type mockBehavior func(mc *minimock.Controller) user.MainService
 
 	type args struct {
 		ctx context.Context
-		req *authv1.UpdateUserRequest
+		req *userv1.UpdateUserRequest
 	}
 
 	var (
@@ -33,22 +33,22 @@ func TestUpdateUser(t *testing.T) {
 		name  = gofakeit.Name()
 		email = gofakeit.Email()
 
-		roles = []authv1.Role{
-			authv1.Role_UNKNOWN,
-			authv1.Role_USER,
-			authv1.Role_ADMIN,
+		roles = []userv1.Role{
+			userv1.Role_UNKNOWN,
+			userv1.Role_USER,
+			userv1.Role_ADMIN,
 		}
 
 		role = roles[gofakeit.Number(0, len(roles)-1)]
 
-		user = &models.User{
+		userModel = &models.User{
 			ID:    id,
 			Name:  name,
 			Email: email,
 			Role:  models.Role(role),
 		}
 
-		req = &authv1.UpdateUserRequest{
+		req = &userv1.UpdateUserRequest{
 			Id:    id,
 			Name:  name,
 			Email: email,
@@ -73,9 +73,9 @@ func TestUpdateUser(t *testing.T) {
 			},
 			want: result,
 			err:  nil,
-			mockBehavior: func(mc *minimock.Controller) auth.UserService {
+			mockBehavior: func(mc *minimock.Controller) user.MainService {
 				mock := mocks.NewUserServiceMock(mc)
-				mock.UpdateMock.Expect(ctx, user).Return(nil)
+				mock.UpdateMock.Expect(ctx, userModel).Return(nil)
 
 				return mock
 			},
@@ -88,9 +88,9 @@ func TestUpdateUser(t *testing.T) {
 			},
 			want: nil,
 			err:  fmt.Errorf("failed to update user: %w", serviceErr),
-			mockBehavior: func(mc *minimock.Controller) auth.UserService {
+			mockBehavior: func(mc *minimock.Controller) user.MainService {
 				mock := mocks.NewUserServiceMock(mc)
-				mock.UpdateMock.Expect(ctx, user).Return(serviceErr)
+				mock.UpdateMock.Expect(ctx, userModel).Return(serviceErr)
 
 				return mock
 			},
@@ -103,7 +103,7 @@ func TestUpdateUser(t *testing.T) {
 			t.Parallel()
 
 			mock := tt.mockBehavior(mc)
-			api := auth.NewController(mock)
+			api := user.NewController(mock)
 
 			response, err := api.UpdateUser(tt.args.ctx, tt.args.req)
 

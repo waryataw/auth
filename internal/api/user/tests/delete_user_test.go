@@ -8,18 +8,18 @@ import (
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/gojuno/minimock/v3"
 	"github.com/stretchr/testify/require"
-	"github.com/waryataw/auth/internal/api/auth"
-	"github.com/waryataw/auth/internal/api/auth/mocks"
-	"github.com/waryataw/auth/pkg/authv1"
+	"github.com/waryataw/auth/internal/api/user"
+	"github.com/waryataw/auth/internal/api/user/mocks"
+	"github.com/waryataw/auth/pkg/userv1"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func TestDeleteUser(t *testing.T) {
-	type mockBehavior func(mc *minimock.Controller) auth.UserService
+	type mockBehavior func(mc *minimock.Controller) user.MainService
 
 	type args struct {
 		ctx context.Context
-		req *authv1.DeleteUserRequest
+		req *userv1.DeleteUserRequest
 	}
 
 	var (
@@ -30,7 +30,7 @@ func TestDeleteUser(t *testing.T) {
 
 		id = gofakeit.Int64()
 
-		req = &authv1.DeleteUserRequest{
+		req = &userv1.DeleteUserRequest{
 			Id: id,
 		}
 	)
@@ -50,7 +50,7 @@ func TestDeleteUser(t *testing.T) {
 			},
 			want: &emptypb.Empty{},
 			err:  nil,
-			mockBehavior: func(mc *minimock.Controller) auth.UserService {
+			mockBehavior: func(mc *minimock.Controller) user.MainService {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.DeleteMock.Expect(ctx, id).Return(nil)
 
@@ -65,7 +65,7 @@ func TestDeleteUser(t *testing.T) {
 			},
 			want: nil,
 			err:  fmt.Errorf("failed to delete user: %w", serviceErr),
-			mockBehavior: func(mc *minimock.Controller) auth.UserService {
+			mockBehavior: func(mc *minimock.Controller) user.MainService {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.DeleteMock.Expect(ctx, id).Return(serviceErr)
 
@@ -80,7 +80,7 @@ func TestDeleteUser(t *testing.T) {
 			t.Parallel()
 
 			mock := tt.mockBehavior(mc)
-			api := auth.NewController(mock)
+			api := user.NewController(mock)
 
 			response, err := api.DeleteUser(tt.args.ctx, tt.args.req)
 

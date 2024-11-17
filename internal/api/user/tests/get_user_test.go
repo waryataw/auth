@@ -8,19 +8,19 @@ import (
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/gojuno/minimock/v3"
 	"github.com/stretchr/testify/require"
-	"github.com/waryataw/auth/internal/api/auth"
-	"github.com/waryataw/auth/internal/api/auth/mocks"
+	"github.com/waryataw/auth/internal/api/user"
+	"github.com/waryataw/auth/internal/api/user/mocks"
 	"github.com/waryataw/auth/internal/models"
-	"github.com/waryataw/auth/pkg/authv1"
+	"github.com/waryataw/auth/pkg/userv1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestGetUser(t *testing.T) {
-	type mockBehavior func(mc *minimock.Controller) auth.UserService
+	type mockBehavior func(mc *minimock.Controller) user.MainService
 
 	type args struct {
 		ctx context.Context
-		req *authv1.GetUserRequest
+		req *userv1.GetUserRequest
 	}
 
 	var (
@@ -41,10 +41,10 @@ func TestGetUser(t *testing.T) {
 			0,
 		)
 
-		roles = []authv1.Role{
-			authv1.Role_UNKNOWN,
-			authv1.Role_USER,
-			authv1.Role_ADMIN,
+		roles = []userv1.Role{
+			userv1.Role_UNKNOWN,
+			userv1.Role_USER,
+			userv1.Role_ADMIN,
 		}
 
 		role = roles[gofakeit.Number(0, len(roles)-1)]
@@ -52,7 +52,7 @@ func TestGetUser(t *testing.T) {
 		createdAt = gofakeit.Date()
 		updatedAt = gofakeit.Date()
 
-		user = &models.User{
+		userModel = &models.User{
 			Name:            name,
 			Email:           email,
 			Password:        password,
@@ -62,31 +62,31 @@ func TestGetUser(t *testing.T) {
 			UpdatedAt:       &updatedAt,
 		}
 
-		reqByID = &authv1.GetUserRequest{
-			Query: &authv1.GetUserRequest_Id{
+		reqByID = &userv1.GetUserRequest{
+			Query: &userv1.GetUserRequest_Id{
 				Id: id,
 			},
 		}
 
-		reqByName = &authv1.GetUserRequest{
-			Query: &authv1.GetUserRequest_Name{
+		reqByName = &userv1.GetUserRequest{
+			Query: &userv1.GetUserRequest_Name{
 				Name: name,
 			},
 		}
 
-		res = &authv1.GetUserResponse{
+		res = &userv1.GetUserResponse{
 			Name:      name,
 			Email:     email,
 			Role:      role,
-			CreatedAt: timestamppb.New(*user.CreatedAt),
-			UpdatedAt: timestamppb.New(*user.UpdatedAt),
+			CreatedAt: timestamppb.New(*userModel.CreatedAt),
+			UpdatedAt: timestamppb.New(*userModel.UpdatedAt),
 		}
 	)
 
 	tests := []struct {
 		name         string
 		args         args
-		want         *authv1.GetUserResponse
+		want         *userv1.GetUserResponse
 		err          error
 		mockBehavior mockBehavior
 	}{
@@ -98,9 +98,9 @@ func TestGetUser(t *testing.T) {
 			},
 			want: res,
 			err:  nil,
-			mockBehavior: func(mc *minimock.Controller) auth.UserService {
+			mockBehavior: func(mc *minimock.Controller) user.MainService {
 				mock := mocks.NewUserServiceMock(mc)
-				mock.GetMock.Expect(ctx, id, "").Return(user, nil)
+				mock.GetMock.Expect(ctx, id, "").Return(userModel, nil)
 
 				return mock
 			},
@@ -113,7 +113,7 @@ func TestGetUser(t *testing.T) {
 			},
 			want: nil,
 			err:  fmt.Errorf("failed to get user: %w", serviceErr),
-			mockBehavior: func(mc *minimock.Controller) auth.UserService {
+			mockBehavior: func(mc *minimock.Controller) user.MainService {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.GetMock.Expect(ctx, id, "").Return(nil, serviceErr)
 
@@ -128,9 +128,9 @@ func TestGetUser(t *testing.T) {
 			},
 			want: res,
 			err:  nil,
-			mockBehavior: func(mc *minimock.Controller) auth.UserService {
+			mockBehavior: func(mc *minimock.Controller) user.MainService {
 				mock := mocks.NewUserServiceMock(mc)
-				mock.GetMock.Expect(ctx, 0, name).Return(user, nil)
+				mock.GetMock.Expect(ctx, 0, name).Return(userModel, nil)
 
 				return mock
 			},
@@ -143,7 +143,7 @@ func TestGetUser(t *testing.T) {
 			},
 			want: nil,
 			err:  fmt.Errorf("failed to get user: %w", serviceErr),
-			mockBehavior: func(mc *minimock.Controller) auth.UserService {
+			mockBehavior: func(mc *minimock.Controller) user.MainService {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.GetMock.Expect(ctx, 0, name).Return(nil, serviceErr)
 
@@ -158,7 +158,7 @@ func TestGetUser(t *testing.T) {
 			t.Parallel()
 
 			mock := tt.mockBehavior(mc)
-			api := auth.NewController(mock)
+			api := user.NewController(mock)
 
 			response, err := api.GetUser(tt.args.ctx, tt.args.req)
 

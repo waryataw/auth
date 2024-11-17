@@ -1,19 +1,19 @@
 syntax = "proto3";
 
-package auth_v1;
+package user_v1;
 
 import "google/protobuf/empty.proto";
-import "auth_user_roles.proto";
+import "user_roles.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "validate/validate.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
-option go_package = "github.com/waryataw/auth/pkg/authv1";
+option go_package = "github.com/waryataw/user/pkg/userv1";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
-    title: "Auth API"
+    title: "User API"
     version: "1.0.0"
     contact: {
       name: "Anton Waryat"
@@ -28,7 +28,7 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   produces: "application/json",
 };
 
-service AuthService {
+service UserService {
   // Создание нового пользователя
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse){
     option (google.api.http) = {

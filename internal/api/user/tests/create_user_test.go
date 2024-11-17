@@ -8,18 +8,18 @@ import (
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/gojuno/minimock/v3"
 	"github.com/stretchr/testify/require"
-	"github.com/waryataw/auth/internal/api/auth"
-	"github.com/waryataw/auth/internal/api/auth/mocks"
+	"github.com/waryataw/auth/internal/api/user"
+	"github.com/waryataw/auth/internal/api/user/mocks"
 	"github.com/waryataw/auth/internal/models"
-	"github.com/waryataw/auth/pkg/authv1"
+	"github.com/waryataw/auth/pkg/userv1"
 )
 
 func TestCreateUser(t *testing.T) {
-	type mockBehavior func(mc *minimock.Controller) auth.UserService
+	type mockBehavior func(mc *minimock.Controller) user.MainService
 
 	type args struct {
 		ctx context.Context
-		req *authv1.CreateUserRequest
+		req *userv1.CreateUserRequest
 	}
 
 	var (
@@ -40,15 +40,15 @@ func TestCreateUser(t *testing.T) {
 			0,
 		)
 
-		roles = []authv1.Role{
-			authv1.Role_UNKNOWN,
-			authv1.Role_USER,
-			authv1.Role_ADMIN,
+		roles = []userv1.Role{
+			userv1.Role_UNKNOWN,
+			userv1.Role_USER,
+			userv1.Role_ADMIN,
 		}
 
 		role = roles[gofakeit.Number(0, len(roles)-1)]
 
-		user = &models.User{
+		userModel = &models.User{
 			Name:            name,
 			Email:           email,
 			Password:        password,
@@ -56,7 +56,7 @@ func TestCreateUser(t *testing.T) {
 			Role:            models.Role(role),
 		}
 
-		req = &authv1.CreateUserRequest{
+		req = &userv1.CreateUserRequest{
 			Name:            name,
 			Email:           email,
 			Password:        password,
@@ -64,7 +64,7 @@ func TestCreateUser(t *testing.T) {
 			Role:            role,
 		}
 
-		res = &authv1.CreateUserResponse{
+		res = &userv1.CreateUserResponse{
 			Id: id,
 		}
 	)
@@ -72,7 +72,7 @@ func TestCreateUser(t *testing.T) {
 	tests := []struct {
 		name         string
 		args         args
-		want         *authv1.CreateUserResponse
+		want         *userv1.CreateUserResponse
 		err          error
 		mockBehavior mockBehavior
 	}{
@@ -84,9 +84,9 @@ func TestCreateUser(t *testing.T) {
 			},
 			want: res,
 			err:  nil,
-			mockBehavior: func(mc *minimock.Controller) auth.UserService {
+			mockBehavior: func(mc *minimock.Controller) user.MainService {
 				mock := mocks.NewUserServiceMock(mc)
-				mock.CreateMock.Expect(ctx, user).Return(id, nil)
+				mock.CreateMock.Expect(ctx, userModel).Return(id, nil)
 
 				return mock
 			},
@@ -99,9 +99,9 @@ func TestCreateUser(t *testing.T) {
 			},
 			want: nil,
 			err:  fmt.Errorf("failed to create user: %w", serviceErr),
-			mockBehavior: func(mc *minimock.Controller) auth.UserService {
+			mockBehavior: func(mc *minimock.Controller) user.MainService {
 				mock := mocks.NewUserServiceMock(mc)
-				mock.CreateMock.Expect(ctx, user).Return(0, serviceErr)
+				mock.CreateMock.Expect(ctx, userModel).Return(0, serviceErr)
 
 				return mock
 			},
@@ -114,7 +114,7 @@ func TestCreateUser(t *testing.T) {
 			t.Parallel()
 
 			mock := tt.mockBehavior(mc)
-			api := auth.NewController(mock)
+			api := user.NewController(mock)
 
 			response, err := api.CreateUser(tt.args.ctx, tt.args.req)
 

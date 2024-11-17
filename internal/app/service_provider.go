@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/IBM/sarama"
-	"github.com/waryataw/auth/internal/api/auth"
+	userApi "github.com/waryataw/auth/internal/api/user"
 	"github.com/waryataw/auth/internal/config"
 	"github.com/waryataw/auth/internal/config/env"
 	userRepository "github.com/waryataw/auth/internal/repository/user"
@@ -31,7 +31,7 @@ type serviceProvider struct {
 	txManager      db.TxManager
 	userRepository userService.Repository
 
-	userService auth.UserService
+	userService userApi.MainService
 
 	userSaverConsumer serviceConsumer.Service
 
@@ -39,7 +39,7 @@ type serviceProvider struct {
 	consumerGroup        sarama.ConsumerGroup
 	consumerGroupHandler *consumer.GroupHandler
 
-	controller *auth.Controller
+	controller *userApi.Controller
 }
 
 func newServiceProvider() *serviceProvider {
@@ -157,7 +157,7 @@ func (s *serviceProvider) UserSaverConsumer(ctx context.Context) serviceConsumer
 	return s.userSaverConsumer
 }
 
-func (s *serviceProvider) UserService(ctx context.Context) auth.UserService {
+func (s *serviceProvider) UserService(ctx context.Context) userApi.MainService {
 	if s.userService == nil {
 		s.userService = userService.NewService(
 			s.UserRepository(ctx),
@@ -167,9 +167,9 @@ func (s *serviceProvider) UserService(ctx context.Context) auth.UserService {
 	return s.userService
 }
 
-func (s *serviceProvider) AuthController(ctx context.Context) *auth.Controller {
+func (s *serviceProvider) AuthController(ctx context.Context) *userApi.Controller {
 	if s.controller == nil {
-		s.controller = auth.NewController(s.UserService(ctx))
+		s.controller = userApi.NewController(s.UserService(ctx))
 	}
 
 	return s.controller

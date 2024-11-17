@@ -15,7 +15,7 @@ import (
 	cors "github.com/rs/cors"
 	"github.com/waryataw/auth/internal/config"
 	"github.com/waryataw/auth/internal/interceptor"
-	"github.com/waryataw/auth/pkg/authv1"
+	"github.com/waryataw/auth/pkg/userv1"
 	_ "github.com/waryataw/auth/statik" // Для инициализации встраиваемых статических файлов
 	"github.com/waryataw/platform_common/pkg/closer"
 	"google.golang.org/grpc"
@@ -135,7 +135,7 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 
 	reflection.Register(a.grpcServer)
 
-	authv1.RegisterAuthServiceServer(a.grpcServer, a.serviceProvider.AuthController(ctx))
+	userv1.RegisterUserServiceServer(a.grpcServer, a.serviceProvider.AuthController(ctx))
 
 	return nil
 }
@@ -147,7 +147,7 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}
 
-	err := authv1.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, a.serviceProvider.GRPCConfig().Address(), opts)
+	err := userv1.RegisterUserServiceHandlerFromEndpoint(ctx, mux, a.serviceProvider.GRPCConfig().Address(), opts)
 	if err != nil {
 		return err
 	}

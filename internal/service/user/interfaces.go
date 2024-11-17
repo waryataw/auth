@@ -7,7 +7,7 @@ import (
 )
 
 //go:generate sh -c "rm -rf mocks && mkdir -p mocks"
-//go:generate ../../../bin/minimock -i github.com/waryataw/auth/internal/service/user.* -o "./mocks/mocks.go"
+//go:generate ../../../bin/minimock -i github.com/waryataw/user/internal/service/user.* -o "./mocks/mocks.go"
 
 // Repository Интерфейс репозитория для операций с пользователем.
 type Repository interface {

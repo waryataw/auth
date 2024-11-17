@@ -1,18 +1,18 @@
-package auth
+package user
 
 import (
-	"github.com/waryataw/auth/pkg/authv1"
+	"github.com/waryataw/auth/pkg/userv1"
 )
 
 // Controller Имплементация Auth сервиса.
 type Controller struct {
-	authv1.UnimplementedAuthServiceServer
-	userService UserService
+	userv1.UnimplementedUserServiceServer
+	service MainService
 }
 
 // NewController Конструктор Имплементации Auth сервиса.
-func NewController(userService UserService) *Controller {
+func NewController(service MainService) *Controller {
 	return &Controller{
-		userService: userService,
+		service: service,
 	}
 }

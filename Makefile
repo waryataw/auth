@@ -35,24 +35,24 @@ get-deps:
 
 generate:
 	mkdir -p pkg/swagger
-	make generate-auth-api
+	make generate-user-api
 	$(LOCAL_BIN)/statik -src=pkg/swagger/ -include='*.css,*.html,*.js,*.json,*.png'
 
-generate-auth-api:
-	mkdir -p pkg/authv1
-	protoc --proto_path api/proto/auth/v1 --proto_path vendor.protogen \
-	--go_out=pkg/authv1 --go_opt=paths=source_relative \
+generate-user-api:
+	mkdir -p pkg/userv1
+	protoc --proto_path api/proto/user/v1 --proto_path vendor.protogen \
+	--go_out=pkg/userv1 --go_opt=paths=source_relative \
 	--plugin=protoc-gen-go=bin/protoc-gen-go \
-	--go-grpc_out=pkg/authv1 --go-grpc_opt=paths=source_relative \
+	--go-grpc_out=pkg/userv1 --go-grpc_opt=paths=source_relative \
 	--plugin=protoc-gen-go-grpc=bin/protoc-gen-go-grpc \
-	--grpc-gateway_out=pkg/authv1 --grpc-gateway_opt=paths=source_relative \
+	--grpc-gateway_out=pkg/userv1 --grpc-gateway_opt=paths=source_relative \
     --plugin=protoc-gen-grpc-gateway=bin/protoc-gen-grpc-gateway \
-    --validate_out lang=go:pkg/authv1 --validate_opt=paths=source_relative \
+    --validate_out lang=go:pkg/userv1 --validate_opt=paths=source_relative \
     --plugin=protoc-gen-validate=bin/protoc-gen-validate \
 	--openapiv2_out=allow_merge=true,merge_file_name=api:pkg/swagger \
 	--plugin=protoc-gen-openapiv2=bin/protoc-gen-openapiv2 \
-	api/proto/auth/v1/auth_service.proto \
-	api/proto/auth/v1/auth_user_roles.proto
+	api/proto/user/v1/user_service.proto \
+	api/proto/user/v1/user_roles.proto
 
 local-migration-status:
 	$(LOCAL_BIN)/goose -dir ${LOCAL_MIGRATION_DIR} postgres ${LOCAL_MIGRATION_DSN} status -v
