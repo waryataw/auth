@@ -11,7 +11,7 @@ type service struct {
 // NewService Конструктор сервиса для операций с пользователем.
 func NewService(
 	repository Repository,
-) user.MainService {
+) user.Service {
 	return &service{
 		repository: repository,
 	}

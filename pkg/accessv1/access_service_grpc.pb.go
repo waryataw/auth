@@ -20,86 +20,86 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// AccessV1Client is the client API for AccessV1 service.
+// AccessClient is the client API for Access service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type AccessV1Client interface {
+type AccessClient interface {
 	Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
-type accessV1Client struct {
+type accessClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewAccessV1Client(cc grpc.ClientConnInterface) AccessV1Client {
-	return &accessV1Client{cc}
+func NewAccessClient(cc grpc.ClientConnInterface) AccessClient {
+	return &accessClient{cc}
 }
 
-func (c *accessV1Client) Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *accessClient) Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/access_v1.AccessV1/Check", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/access_v1.Access/Check", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// AccessV1Server is the server API for AccessV1 service.
-// All implementations must embed UnimplementedAccessV1Server
+// AccessServer is the server API for Access service.
+// All implementations must embed UnimplementedAccessServer
 // for forward compatibility
-type AccessV1Server interface {
+type AccessServer interface {
 	Check(context.Context, *CheckRequest) (*emptypb.Empty, error)
-	mustEmbedUnimplementedAccessV1Server()
+	mustEmbedUnimplementedAccessServer()
 }
 
-// UnimplementedAccessV1Server must be embedded to have forward compatible implementations.
-type UnimplementedAccessV1Server struct {
+// UnimplementedAccessServer must be embedded to have forward compatible implementations.
+type UnimplementedAccessServer struct {
 }
 
-func (UnimplementedAccessV1Server) Check(context.Context, *CheckRequest) (*emptypb.Empty, error) {
+func (UnimplementedAccessServer) Check(context.Context, *CheckRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Check not implemented")
 }
-func (UnimplementedAccessV1Server) mustEmbedUnimplementedAccessV1Server() {}
+func (UnimplementedAccessServer) mustEmbedUnimplementedAccessServer() {}
 
-// UnsafeAccessV1Server may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to AccessV1Server will
+// UnsafeAccessServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to AccessServer will
 // result in compilation errors.
-type UnsafeAccessV1Server interface {
-	mustEmbedUnimplementedAccessV1Server()
+type UnsafeAccessServer interface {
+	mustEmbedUnimplementedAccessServer()
 }
 
-func RegisterAccessV1Server(s grpc.ServiceRegistrar, srv AccessV1Server) {
-	s.RegisterService(&AccessV1_ServiceDesc, srv)
+func RegisterAccessServer(s grpc.ServiceRegistrar, srv AccessServer) {
+	s.RegisterService(&Access_ServiceDesc, srv)
 }
 
-func _AccessV1_Check_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Access_Check_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CheckRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccessV1Server).Check(ctx, in)
+		return srv.(AccessServer).Check(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/access_v1.AccessV1/Check",
+		FullMethod: "/access_v1.Access/Check",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccessV1Server).Check(ctx, req.(*CheckRequest))
+		return srv.(AccessServer).Check(ctx, req.(*CheckRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// AccessV1_ServiceDesc is the grpc.ServiceDesc for AccessV1 service.
+// Access_ServiceDesc is the grpc.ServiceDesc for Access service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var AccessV1_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "access_v1.AccessV1",
-	HandlerType: (*AccessV1Server)(nil),
+var Access_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "access_v1.Access",
+	HandlerType: (*AccessServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Check",
-			Handler:    _AccessV1_Check_Handler,
+			Handler:    _Access_Check_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

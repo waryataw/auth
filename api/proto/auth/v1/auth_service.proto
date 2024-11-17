@@ -4,7 +4,7 @@ package auth_v1;
 
 option go_package = "github.com/waryataw/auth/pkg/authv1";
 
-service AuthV1 {
+service Auth {
   rpc Login (LoginRequest) returns (LoginResponse);
   rpc GetRefreshToken (GetRefreshTokenRequest) returns (GetRefreshTokenResponse);
   rpc GetAccessToken (GetAccessTokenRequest) returns (GetAccessTokenResponse);

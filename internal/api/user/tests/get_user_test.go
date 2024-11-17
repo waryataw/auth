@@ -16,7 +16,7 @@ import (
 )
 
 func TestGetUser(t *testing.T) {
-	type mockBehavior func(mc *minimock.Controller) user.MainService
+	type mockBehavior func(mc *minimock.Controller) user.Service
 
 	type args struct {
 		ctx context.Context
@@ -98,7 +98,7 @@ func TestGetUser(t *testing.T) {
 			},
 			want: res,
 			err:  nil,
-			mockBehavior: func(mc *minimock.Controller) user.MainService {
+			mockBehavior: func(mc *minimock.Controller) user.Service {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.GetMock.Expect(ctx, id, "").Return(userModel, nil)
 
@@ -113,7 +113,7 @@ func TestGetUser(t *testing.T) {
 			},
 			want: nil,
 			err:  fmt.Errorf("failed to get user: %w", serviceErr),
-			mockBehavior: func(mc *minimock.Controller) user.MainService {
+			mockBehavior: func(mc *minimock.Controller) user.Service {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.GetMock.Expect(ctx, id, "").Return(nil, serviceErr)
 
@@ -128,7 +128,7 @@ func TestGetUser(t *testing.T) {
 			},
 			want: res,
 			err:  nil,
-			mockBehavior: func(mc *minimock.Controller) user.MainService {
+			mockBehavior: func(mc *minimock.Controller) user.Service {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.GetMock.Expect(ctx, 0, name).Return(userModel, nil)
 
@@ -143,7 +143,7 @@ func TestGetUser(t *testing.T) {
 			},
 			want: nil,
 			err:  fmt.Errorf("failed to get user: %w", serviceErr),
-			mockBehavior: func(mc *minimock.Controller) user.MainService {
+			mockBehavior: func(mc *minimock.Controller) user.Service {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.GetMock.Expect(ctx, 0, name).Return(nil, serviceErr)
 

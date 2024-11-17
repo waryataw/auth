@@ -15,6 +15,8 @@ import (
 	cors "github.com/rs/cors"
 	"github.com/waryataw/auth/internal/config"
 	"github.com/waryataw/auth/internal/interceptor"
+	"github.com/waryataw/auth/pkg/accessv1"
+	"github.com/waryataw/auth/pkg/authv1"
 	"github.com/waryataw/auth/pkg/userv1"
 	_ "github.com/waryataw/auth/statik" // Для инициализации встраиваемых статических файлов
 	"github.com/waryataw/platform_common/pkg/closer"
@@ -135,7 +137,9 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 
 	reflection.Register(a.grpcServer)
 
-	userv1.RegisterUserServiceServer(a.grpcServer, a.serviceProvider.AuthController(ctx))
+	userv1.RegisterUserServiceServer(a.grpcServer, a.serviceProvider.UserController(ctx))
+	authv1.RegisterAuthServer(a.grpcServer, a.serviceProvider.AuthController(ctx))
+	accessv1.RegisterAccessServer(a.grpcServer, a.serviceProvider.AccessController(ctx))
 
 	return nil
 }

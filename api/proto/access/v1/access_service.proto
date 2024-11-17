@@ -6,7 +6,7 @@ import "google/protobuf/empty.proto";
 
 option go_package = "github.com/waryataw/auth/pkg/accessv1";
 
-service AccessV1 {
+service Access {
   rpc Check(CheckRequest) returns (google.protobuf.Empty);
 }
 

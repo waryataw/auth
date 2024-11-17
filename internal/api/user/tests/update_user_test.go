@@ -16,7 +16,7 @@ import (
 )
 
 func TestUpdateUser(t *testing.T) {
-	type mockBehavior func(mc *minimock.Controller) user.MainService
+	type mockBehavior func(mc *minimock.Controller) user.Service
 
 	type args struct {
 		ctx context.Context
@@ -73,7 +73,7 @@ func TestUpdateUser(t *testing.T) {
 			},
 			want: result,
 			err:  nil,
-			mockBehavior: func(mc *minimock.Controller) user.MainService {
+			mockBehavior: func(mc *minimock.Controller) user.Service {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.UpdateMock.Expect(ctx, userModel).Return(nil)
 
@@ -88,7 +88,7 @@ func TestUpdateUser(t *testing.T) {
 			},
 			want: nil,
 			err:  fmt.Errorf("failed to update user: %w", serviceErr),
-			mockBehavior: func(mc *minimock.Controller) user.MainService {
+			mockBehavior: func(mc *minimock.Controller) user.Service {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.UpdateMock.Expect(ctx, userModel).Return(serviceErr)
 

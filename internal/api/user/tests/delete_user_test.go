@@ -15,7 +15,7 @@ import (
 )
 
 func TestDeleteUser(t *testing.T) {
-	type mockBehavior func(mc *minimock.Controller) user.MainService
+	type mockBehavior func(mc *minimock.Controller) user.Service
 
 	type args struct {
 		ctx context.Context
@@ -50,7 +50,7 @@ func TestDeleteUser(t *testing.T) {
 			},
 			want: &emptypb.Empty{},
 			err:  nil,
-			mockBehavior: func(mc *minimock.Controller) user.MainService {
+			mockBehavior: func(mc *minimock.Controller) user.Service {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.DeleteMock.Expect(ctx, id).Return(nil)
 
@@ -65,7 +65,7 @@ func TestDeleteUser(t *testing.T) {
 			},
 			want: nil,
 			err:  fmt.Errorf("failed to delete user: %w", serviceErr),
-			mockBehavior: func(mc *minimock.Controller) user.MainService {
+			mockBehavior: func(mc *minimock.Controller) user.Service {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.DeleteMock.Expect(ctx, id).Return(serviceErr)
 

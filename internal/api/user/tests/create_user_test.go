@@ -15,7 +15,7 @@ import (
 )
 
 func TestCreateUser(t *testing.T) {
-	type mockBehavior func(mc *minimock.Controller) user.MainService
+	type mockBehavior func(mc *minimock.Controller) user.Service
 
 	type args struct {
 		ctx context.Context
@@ -84,7 +84,7 @@ func TestCreateUser(t *testing.T) {
 			},
 			want: res,
 			err:  nil,
-			mockBehavior: func(mc *minimock.Controller) user.MainService {
+			mockBehavior: func(mc *minimock.Controller) user.Service {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.CreateMock.Expect(ctx, userModel).Return(id, nil)
 
@@ -99,7 +99,7 @@ func TestCreateUser(t *testing.T) {
 			},
 			want: nil,
 			err:  fmt.Errorf("failed to create user: %w", serviceErr),
-			mockBehavior: func(mc *minimock.Controller) user.MainService {
+			mockBehavior: func(mc *minimock.Controller) user.Service {
 				mock := mocks.NewUserServiceMock(mc)
 				mock.CreateMock.Expect(ctx, userModel).Return(0, serviceErr)
 
