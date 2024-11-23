@@ -32,6 +32,12 @@ type KafkaConsumerConfig interface {
 	Config() *sarama.Config
 }
 
+// RefreshTokenConfig Refresh token config.
+type RefreshTokenConfig interface {
+	RefreshTokenSecretKey() string
+	RefreshTokenExpirationMinutes() int64
+}
+
 // Load Configs.
 func Load(path string) error {
 	err := godotenv.Load(path)

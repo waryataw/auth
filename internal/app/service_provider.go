@@ -10,6 +10,7 @@ import (
 	userApi "github.com/waryataw/auth/internal/api/user"
 	"github.com/waryataw/auth/internal/config"
 	"github.com/waryataw/auth/internal/config/env"
+	authRepository "github.com/waryataw/auth/internal/repository/auth"
 	userRepository "github.com/waryataw/auth/internal/repository/user"
 	accessService "github.com/waryataw/auth/internal/service/access"
 	authService "github.com/waryataw/auth/internal/service/auth"
@@ -30,10 +31,12 @@ type serviceProvider struct {
 	httpConfig          config.HTTPConfig
 	kafkaConsumerConfig config.KafkaConsumerConfig
 	swaggerConfig       config.SwaggerConfig
+	refreshTokenConfig  config.RefreshTokenConfig
 
 	dbClient       db.Client
 	txManager      db.TxManager
 	userRepository userService.Repository
+	authRepository authService.Repository
 
 	userService   userApi.Service
 	authService   authApi.Service
@@ -119,6 +122,19 @@ func (s *serviceProvider) SwaggerConfig() config.SwaggerConfig {
 	return s.swaggerConfig
 }
 
+func (s *serviceProvider) RefreshTokenConfig() config.RefreshTokenConfig {
+	if s.refreshTokenConfig == nil {
+		cfg, err := env.NewRefreshTokenConfig()
+		if err != nil {
+			log.Fatalf("failed to get refresh token config: %s", err.Error())
+		}
+
+		s.refreshTokenConfig = cfg
+	}
+
+	return s.refreshTokenConfig
+}
+
 func (s *serviceProvider) DBClient(ctx context.Context) db.Client {
 	if s.dbClient == nil {
 		cl, err := pg.New(ctx, s.PGConfig().DSN())
@@ -154,6 +170,14 @@ func (s *serviceProvider) UserRepository(ctx context.Context) userService.Reposi
 	return s.userRepository
 }
 
+func (s *serviceProvider) AuthRepository(_ context.Context) authService.Repository {
+	if s.authRepository == nil {
+		s.authRepository = authRepository.NewRepository(s.RefreshTokenConfig())
+	}
+
+	return s.authRepository
+}
+
 func (s *serviceProvider) UserSaverConsumer(ctx context.Context) serviceConsumer.Service {
 	if s.userSaverConsumer == nil {
 		s.userSaverConsumer = user_saver.NewService(
@@ -175,9 +199,9 @@ func (s *serviceProvider) UserService(ctx context.Context) userApi.Service {
 	return s.userService
 }
 
-func (s *serviceProvider) AuthService(_ context.Context) authApi.Service {
+func (s *serviceProvider) AuthService(ctx context.Context) authApi.Service {
 	if s.authService == nil {
-		s.authService = authService.NewService()
+		s.authService = authService.NewService(s.AuthRepository(ctx), s.UserRepository(ctx))
 	}
 
 	return s.authService

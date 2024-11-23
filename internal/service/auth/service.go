@@ -5,9 +5,11 @@ import (
 )
 
 type service struct {
+	repository     Repository
+	userRepository UserRepository
 }
 
 // NewService Конструктор сервиса Аутентификации.
-func NewService() auth.Service {
-	return &service{}
+func NewService(repository Repository, userRepository UserRepository) auth.Service {
+	return &service{repository: repository, userRepository: userRepository}
 }

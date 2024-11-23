@@ -72,13 +72,13 @@ message CreateUserRequest {
   string password = 3 [(validate.rules).string = {
     min_len: 8,
     max_len: 64,
-    pattern: "^(.*[a-z].*)(.*[A-Z].*)(.*\\d.*)$"
+//    pattern: "^(.*[a-z].*)(.*[A-Z].*)(.*\\d.*)$"
   }];
   // Подтверждение пароля
   string password_confirm = 4[(validate.rules).string = {
     min_len: 8,
     max_len: 64,
-    pattern: "^(.*[a-z].*)(.*[A-Z].*)(.*\\d.*)$"
+//    pattern: "^(.*[a-z].*)(.*[A-Z].*)(.*\\d.*)$"
   }];
   // Роль(Пользователь или Админ)
   Role role = 5 [(validate.rules).enum = {in: [1, 2]}];

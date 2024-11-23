@@ -91,32 +91,10 @@ func (m *CreateUserRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if !_CreateUserRequest_Password_Pattern.MatchString(m.GetPassword()) {
-		err := CreateUserRequestValidationError{
-			field:  "Password",
-			reason: "value does not match regex pattern \"^(.*[a-z].*)(.*[A-Z].*)(.*\\\\d.*)$\"",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	if l := utf8.RuneCountInString(m.GetPasswordConfirm()); l < 8 || l > 64 {
 		err := CreateUserRequestValidationError{
 			field:  "PasswordConfirm",
 			reason: "value length must be between 8 and 64 runes, inclusive",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if !_CreateUserRequest_PasswordConfirm_Pattern.MatchString(m.GetPasswordConfirm()) {
-		err := CreateUserRequestValidationError{
-			field:  "PasswordConfirm",
-			reason: "value does not match regex pattern \"^(.*[a-z].*)(.*[A-Z].*)(.*\\\\d.*)$\"",
 		}
 		if !all {
 			return err
@@ -264,10 +242,6 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CreateUserRequestValidationError{}
-
-var _CreateUserRequest_Password_Pattern = regexp.MustCompile("^(.*[a-z].*)(.*[A-Z].*)(.*\\d.*)$")
-
-var _CreateUserRequest_PasswordConfirm_Pattern = regexp.MustCompile("^(.*[a-z].*)(.*[A-Z].*)(.*\\d.*)$")
 
 var _CreateUserRequest_Role_InLookup = map[Role]struct{}{
 	1: {},
