@@ -31,7 +31,7 @@ type serviceProvider struct {
 	httpConfig          config.HTTPConfig
 	kafkaConsumerConfig config.KafkaConsumerConfig
 	swaggerConfig       config.SwaggerConfig
-	refreshTokenConfig  config.RefreshTokenConfig
+	authConfig          config.AuthConfig
 
 	dbClient       db.Client
 	txManager      db.TxManager
@@ -122,17 +122,17 @@ func (s *serviceProvider) SwaggerConfig() config.SwaggerConfig {
 	return s.swaggerConfig
 }
 
-func (s *serviceProvider) RefreshTokenConfig() config.RefreshTokenConfig {
-	if s.refreshTokenConfig == nil {
-		cfg, err := env.NewRefreshTokenConfig()
+func (s *serviceProvider) AuthConfig() config.AuthConfig {
+	if s.authConfig == nil {
+		cfg, err := env.NewAuthConfig()
 		if err != nil {
-			log.Fatalf("failed to get refresh token config: %s", err.Error())
+			log.Fatalf("failed to get auth config: %s", err.Error())
 		}
 
-		s.refreshTokenConfig = cfg
+		s.authConfig = cfg
 	}
 
-	return s.refreshTokenConfig
+	return s.authConfig
 }
 
 func (s *serviceProvider) DBClient(ctx context.Context) db.Client {
@@ -172,7 +172,7 @@ func (s *serviceProvider) UserRepository(ctx context.Context) userService.Reposi
 
 func (s *serviceProvider) AuthRepository(_ context.Context) authService.Repository {
 	if s.authRepository == nil {
-		s.authRepository = authRepository.NewRepository(s.RefreshTokenConfig())
+		s.authRepository = authRepository.NewRepository(s.AuthConfig())
 	}
 
 	return s.authRepository

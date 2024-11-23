@@ -6,10 +6,10 @@ import (
 )
 
 type repo struct {
-	refreshTokenConfig config.RefreshTokenConfig
+	authConfig config.AuthConfig
 }
 
 // NewRepository Конструктор репозитория пользователя.
-func NewRepository(refreshTokenConfig config.RefreshTokenConfig) auth.Repository {
-	return &repo{refreshTokenConfig: refreshTokenConfig}
+func NewRepository(authConfig config.AuthConfig) auth.Repository {
+	return &repo{authConfig: authConfig}
 }

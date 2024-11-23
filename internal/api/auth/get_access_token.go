@@ -16,7 +16,7 @@ func (c Controller) GetAccessToken(ctx context.Context, req *authv1.GetAccessTok
 
 	token, err := c.service.GetAccessToken(ctx, req.RefreshToken)
 	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, status.Error(codes.Unauthenticated, err.Error())
 	}
 
 	return &authv1.GetAccessTokenResponse{AccessToken: token}, nil

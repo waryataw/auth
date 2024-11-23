@@ -32,10 +32,13 @@ type KafkaConsumerConfig interface {
 	Config() *sarama.Config
 }
 
-// RefreshTokenConfig Refresh token config.
-type RefreshTokenConfig interface {
+// AuthConfig Refresh token config.
+type AuthConfig interface {
+	AuthPrefix() string
 	RefreshTokenSecretKey() string
 	RefreshTokenExpirationMinutes() int64
+	AccessTokenSecretKey() string
+	AccessTokenExpirationMinutes() int64
 }
 
 // Load Configs.
