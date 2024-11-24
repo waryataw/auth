@@ -6,5 +6,5 @@ import (
 
 // Service Access Сервис.
 type Service interface {
-	Check(ctx context.Context, endpointAddress string) error
+	Check(ctx context.Context, accessToken string, endpointAddress string) error
 }

@@ -10,6 +10,7 @@ import (
 	userApi "github.com/waryataw/auth/internal/api/user"
 	"github.com/waryataw/auth/internal/config"
 	"github.com/waryataw/auth/internal/config/env"
+	accessRepository "github.com/waryataw/auth/internal/repository/access"
 	authRepository "github.com/waryataw/auth/internal/repository/auth"
 	userRepository "github.com/waryataw/auth/internal/repository/user"
 	accessService "github.com/waryataw/auth/internal/service/access"
@@ -33,10 +34,11 @@ type serviceProvider struct {
 	swaggerConfig       config.SwaggerConfig
 	authConfig          config.AuthConfig
 
-	dbClient       db.Client
-	txManager      db.TxManager
-	userRepository userService.Repository
-	authRepository authService.Repository
+	dbClient         db.Client
+	txManager        db.TxManager
+	userRepository   userService.Repository
+	authRepository   authService.Repository
+	accessRepository accessService.Repository
 
 	userService   userApi.Service
 	authService   authApi.Service
@@ -178,6 +180,14 @@ func (s *serviceProvider) AuthRepository(_ context.Context) authService.Reposito
 	return s.authRepository
 }
 
+func (s *serviceProvider) AccessRepository(_ context.Context) accessService.Repository {
+	if s.accessRepository == nil {
+		s.accessRepository = accessRepository.NewRepository(s.AuthConfig())
+	}
+
+	return s.accessRepository
+}
+
 func (s *serviceProvider) UserSaverConsumer(ctx context.Context) serviceConsumer.Service {
 	if s.userSaverConsumer == nil {
 		s.userSaverConsumer = user_saver.NewService(
@@ -207,9 +217,9 @@ func (s *serviceProvider) AuthService(ctx context.Context) authApi.Service {
 	return s.authService
 }
 
-func (s *serviceProvider) AccessService(_ context.Context) accessApi.Service {
+func (s *serviceProvider) AccessService(ctx context.Context) accessApi.Service {
 	if s.accessService == nil {
-		s.accessService = accessService.NewService()
+		s.accessService = accessService.NewService(s.AccessRepository(ctx))
 	}
 
 	return s.accessService
