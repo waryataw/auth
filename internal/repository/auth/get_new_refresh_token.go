@@ -9,8 +9,8 @@ import (
 	"github.com/waryataw/auth/internal/utils"
 )
 
-func (repository repo) GetNewRefreshToken(_ context.Context, oldRefreshToken string) (string, error) {
-	claims, err := utils.VerifyToken(oldRefreshToken, []byte(repository.authConfig.RefreshTokenSecretKey()))
+func (r repo) GetNewRefreshToken(_ context.Context, oldRefreshToken string) (string, error) {
+	claims, err := utils.VerifyToken(oldRefreshToken, []byte(r.authConfig.RefreshTokenSecretKey()))
 	if err != nil {
 		return "", fmt.Errorf("verifying old refresh token: %w", err)
 	}
@@ -19,8 +19,8 @@ func (repository repo) GetNewRefreshToken(_ context.Context, oldRefreshToken str
 		Name: claims.Username,
 		Role: claims.Role,
 	},
-		[]byte(repository.authConfig.RefreshTokenSecretKey()),
-		time.Duration(repository.authConfig.RefreshTokenExpirationMinutes())*time.Minute,
+		[]byte(r.authConfig.RefreshTokenSecretKey()),
+		time.Duration(r.authConfig.RefreshTokenExpirationMinutes())*time.Minute,
 	)
 	if err != nil {
 		return "", fmt.Errorf("generating refresh token: %w", err)

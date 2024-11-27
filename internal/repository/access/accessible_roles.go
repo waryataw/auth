@@ -8,7 +8,7 @@ import (
 
 var accessibleRoles map[string]models.Role
 
-func (repository repo) AccessibleRoles(_ context.Context) (map[string]models.Role, error) {
+func (r repo) AccessibleRoles(_ context.Context) (map[string]models.Role, error) {
 	if accessibleRoles == nil {
 		accessibleRoles = make(map[string]models.Role)
 		accessibleRoles[models.CreateChatPath] = models.RoleAdmin

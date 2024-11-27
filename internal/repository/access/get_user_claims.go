@@ -8,8 +8,8 @@ import (
 	"github.com/waryataw/auth/internal/utils"
 )
 
-func (repository repo) GetUserClaims(_ context.Context, accessToken string) (*models.UserClaims, error) {
-	claims, err := utils.VerifyToken(accessToken, []byte(repository.authConfig.AccessTokenSecretKey()))
+func (r repo) GetUserClaims(_ context.Context, accessToken string) (*models.UserClaims, error) {
+	claims, err := utils.VerifyToken(accessToken, []byte(r.authConfig.AccessTokenSecretKey()))
 	if err != nil {
 		return nil, fmt.Errorf("access token verification failed: %w", err)
 	}

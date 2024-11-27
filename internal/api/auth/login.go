@@ -12,13 +12,12 @@ import (
 
 // Login Логин.
 func (c Controller) Login(ctx context.Context, req *authv1.LoginRequest) (*authv1.LoginResponse, error) {
-	if req == nil {
+	switch {
+	case req == nil:
 		return nil, status.Error(codes.InvalidArgument, "request is nil")
-	}
-	if req.Username == "" {
+	case req.Username == "":
 		return nil, status.Error(codes.InvalidArgument, "username is empty")
-	}
-	if req.Password == "" {
+	case req.Password == "":
 		return nil, status.Error(codes.InvalidArgument, "password is empty")
 	}
 
