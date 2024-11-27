@@ -9,12 +9,12 @@ import (
 )
 
 // GetAccessToken Получить Access Токен.
-func (c Controller) GetAccessToken(ctx context.Context, req *authv1.GetAccessTokenRequest) (*authv1.GetAccessTokenResponse, error) {
+func (c Controller) GetAccessToken(_ context.Context, req *authv1.GetAccessTokenRequest) (*authv1.GetAccessTokenResponse, error) {
 	if req == nil || req.RefreshToken == "" {
 		return nil, status.Error(codes.InvalidArgument, "refresh token is required")
 	}
 
-	token, err := c.service.NewAccessToken(ctx, req.RefreshToken)
+	token, err := c.service.NewAccessToken(req.RefreshToken)
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, err.Error())
 	}

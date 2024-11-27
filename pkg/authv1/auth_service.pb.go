@@ -7,11 +7,10 @@
 package authv1
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -383,11 +382,11 @@ var file_auth_service_proto_goTypes = []interface{}{
 }
 var file_auth_service_proto_depIdxs = []int32{
 	0, // 0: auth_v1.Auth.Login:input_type -> auth_v1.LoginRequest
-	2, // 1: auth_v1.Auth.NewRefreshToken:input_type -> auth_v1.GetRefreshTokenRequest
-	4, // 2: auth_v1.Auth.NewAccessToken:input_type -> auth_v1.GetAccessTokenRequest
+	2, // 1: auth_v1.Auth.GetRefreshToken:input_type -> auth_v1.GetRefreshTokenRequest
+	4, // 2: auth_v1.Auth.GetAccessToken:input_type -> auth_v1.GetAccessTokenRequest
 	1, // 3: auth_v1.Auth.Login:output_type -> auth_v1.LoginResponse
-	3, // 4: auth_v1.Auth.NewRefreshToken:output_type -> auth_v1.GetRefreshTokenResponse
-	5, // 5: auth_v1.Auth.NewAccessToken:output_type -> auth_v1.GetAccessTokenResponse
+	3, // 4: auth_v1.Auth.GetRefreshToken:output_type -> auth_v1.GetRefreshTokenResponse
+	5, // 5: auth_v1.Auth.GetAccessToken:output_type -> auth_v1.GetAccessTokenResponse
 	3, // [3:6] is the sub-list for method output_type
 	0, // [0:3] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

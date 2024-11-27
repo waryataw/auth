@@ -13,7 +13,7 @@ type UserRepository interface {
 
 // Repository Интерфейс Auth репозитория.
 type Repository interface {
-	NewRefreshToken(ctx context.Context, user *models.User) (string, error)
-	UpdateRefreshToken(ctx context.Context, oldRefreshToken string) (string, error)
-	NewAccessToken(ctx context.Context, refreshToken string) (string, error)
+	NewRefreshToken(user *models.User) (string, error)
+	UpdateRefreshToken(oldRefreshToken string) (string, error)
+	NewAccessToken(refreshToken string) (string, error)
 }

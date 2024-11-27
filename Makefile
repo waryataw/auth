@@ -83,7 +83,7 @@ local-migration-down:
 	$(LOCAL_BIN)/goose -dir ${LOCAL_MIGRATION_DIR} postgres ${LOCAL_MIGRATION_DSN} down -v
 
 create-migration:
-	$(LOCAL_BIN)/goose -dir migrations create add_user_table sql
+	$(LOCAL_BIN)/goose -dir migrations create add_accessible_roles_table sql
 
 clean-mod-cache:
 	GOBIN=$(LOCAL_BIN) go clean -

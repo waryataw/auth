@@ -1,12 +1,11 @@
 package auth
 
 import (
-	"context"
 	"fmt"
 )
 
-func (s service) UpdateRefreshToken(ctx context.Context, oldRefreshToken string) (string, error) {
-	newRefreshToken, err := s.repository.UpdateRefreshToken(ctx, oldRefreshToken)
+func (s service) UpdateRefreshToken(oldRefreshToken string) (string, error) {
+	newRefreshToken, err := s.repository.UpdateRefreshToken(oldRefreshToken)
 	if err != nil {
 		return "", fmt.Errorf("failed to get new refresh token: %w", err)
 	}

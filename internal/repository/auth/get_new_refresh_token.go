@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"context"
 	"fmt"
 	"time"
 
@@ -9,7 +8,7 @@ import (
 	"github.com/waryataw/auth/internal/utils"
 )
 
-func (r repo) UpdateRefreshToken(_ context.Context, oldRefreshToken string) (string, error) {
+func (r repo) UpdateRefreshToken(oldRefreshToken string) (string, error) {
 	claims, err := utils.VerifyToken(oldRefreshToken, []byte(r.authConfig.RefreshTokenSecretKey()))
 	if err != nil {
 		return "", fmt.Errorf("verifying old refresh token: %w", err)

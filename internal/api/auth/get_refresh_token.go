@@ -9,12 +9,12 @@ import (
 )
 
 // GetRefreshToken Получить Refresh Токен.
-func (c Controller) GetRefreshToken(ctx context.Context, req *authv1.GetRefreshTokenRequest) (*authv1.GetRefreshTokenResponse, error) {
+func (c Controller) GetRefreshToken(_ context.Context, req *authv1.GetRefreshTokenRequest) (*authv1.GetRefreshTokenResponse, error) {
 	if req == nil || req.OldRefreshToken == "" {
 		return nil, status.Error(codes.InvalidArgument, "old refresh token is required")
 	}
 
-	token, err := c.service.UpdateRefreshToken(ctx, req.OldRefreshToken)
+	token, err := c.service.UpdateRefreshToken(req.OldRefreshToken)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}

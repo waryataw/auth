@@ -8,6 +8,6 @@ import (
 
 // Repository Интерфейс Auth репозитория.
 type Repository interface {
-	GetUserClaims(ctx context.Context, accessToken string) (*models.UserClaims, error)
-	AccessibleRoles(ctx context.Context) (map[string]models.Role, error)
+	GetUserClaims(accessToken string) (*models.UserClaims, error)
+	GetAccessibleRoles(ctx context.Context, path string) (map[string]models.Role, error)
 }

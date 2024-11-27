@@ -6,12 +6,12 @@ import (
 )
 
 func (s service) Check(ctx context.Context, accessToken string, endpointAddress string) error {
-	claims, err := s.repository.GetUserClaims(ctx, accessToken)
+	claims, err := s.repository.GetUserClaims(accessToken)
 	if err != nil {
 		return fmt.Errorf("failed to get user claims: %w", err)
 	}
 
-	accessibleRolesMap, err := s.repository.AccessibleRoles(ctx)
+	accessibleRolesMap, err := s.repository.GetAccessibleRoles(ctx, endpointAddress)
 	if err != nil {
 		return fmt.Errorf("failed to get accessible roles: %w", err)
 	}

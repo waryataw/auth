@@ -180,9 +180,9 @@ func (s *serviceProvider) AuthRepository(_ context.Context) authService.Reposito
 	return s.authRepository
 }
 
-func (s *serviceProvider) AccessRepository(_ context.Context) accessService.Repository {
+func (s *serviceProvider) AccessRepository(ctx context.Context) accessService.Repository {
 	if s.accessRepository == nil {
-		s.accessRepository = accessRepository.NewRepository(s.AuthConfig())
+		s.accessRepository = accessRepository.NewRepository(s.AuthConfig(), s.DBClient(ctx))
 	}
 
 	return s.accessRepository
