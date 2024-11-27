@@ -9,7 +9,7 @@ import (
 	"github.com/waryataw/auth/internal/utils"
 )
 
-func (r repo) GetRefreshToken(_ context.Context, user *models.User) (string, error) {
+func (r repo) NewRefreshToken(_ context.Context, user *models.User) (string, error) {
 	token, err := utils.GenerateToken(
 		*user,
 		[]byte(r.authConfig.RefreshTokenSecretKey()),

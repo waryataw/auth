@@ -21,7 +21,7 @@ func (s service) Login(ctx context.Context, username, password string) (string, 
 	}
 
 	if utils.VerifyPassword(user.Password, password) {
-		token, err := s.repository.GetRefreshToken(ctx, user)
+		token, err := s.repository.NewRefreshToken(ctx, user)
 		if err != nil {
 			return "", fmt.Errorf("failed to generate token: %w", err)
 		}

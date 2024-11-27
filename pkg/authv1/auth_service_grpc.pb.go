@@ -47,7 +47,7 @@ func (c *authClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.C
 
 func (c *authClient) GetRefreshToken(ctx context.Context, in *GetRefreshTokenRequest, opts ...grpc.CallOption) (*GetRefreshTokenResponse, error) {
 	out := new(GetRefreshTokenResponse)
-	err := c.cc.Invoke(ctx, "/auth_v1.Auth/GetRefreshToken", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth_v1.Auth/NewRefreshToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (c *authClient) GetRefreshToken(ctx context.Context, in *GetRefreshTokenReq
 
 func (c *authClient) GetAccessToken(ctx context.Context, in *GetAccessTokenRequest, opts ...grpc.CallOption) (*GetAccessTokenResponse, error) {
 	out := new(GetAccessTokenResponse)
-	err := c.cc.Invoke(ctx, "/auth_v1.Auth/GetAccessToken", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth_v1.Auth/NewAccessToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -81,10 +81,10 @@ func (UnimplementedAuthServer) Login(context.Context, *LoginRequest) (*LoginResp
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
 func (UnimplementedAuthServer) GetRefreshToken(context.Context, *GetRefreshTokenRequest) (*GetRefreshTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetRefreshToken not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method NewRefreshToken not implemented")
 }
 func (UnimplementedAuthServer) GetAccessToken(context.Context, *GetAccessTokenRequest) (*GetAccessTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAccessToken not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method NewAccessToken not implemented")
 }
 func (UnimplementedAuthServer) mustEmbedUnimplementedAuthServer() {}
 
@@ -127,7 +127,7 @@ func _Auth_GetRefreshToken_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/auth_v1.Auth/GetRefreshToken",
+		FullMethod: "/auth_v1.Auth/NewRefreshToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServer).GetRefreshToken(ctx, req.(*GetRefreshTokenRequest))
@@ -145,7 +145,7 @@ func _Auth_GetAccessToken_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/auth_v1.Auth/GetAccessToken",
+		FullMethod: "/auth_v1.Auth/NewAccessToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServer).GetAccessToken(ctx, req.(*GetAccessTokenRequest))
@@ -165,11 +165,11 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Auth_Login_Handler,
 		},
 		{
-			MethodName: "GetRefreshToken",
+			MethodName: "NewRefreshToken",
 			Handler:    _Auth_GetRefreshToken_Handler,
 		},
 		{
-			MethodName: "GetAccessToken",
+			MethodName: "NewAccessToken",
 			Handler:    _Auth_GetAccessToken_Handler,
 		},
 	},

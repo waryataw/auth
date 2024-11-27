@@ -14,7 +14,7 @@ func (c Controller) GetRefreshToken(ctx context.Context, req *authv1.GetRefreshT
 		return nil, status.Error(codes.InvalidArgument, "old refresh token is required")
 	}
 
-	token, err := c.service.GetRefreshToken(ctx, req.OldRefreshToken)
+	token, err := c.service.UpdateRefreshToken(ctx, req.OldRefreshToken)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}

@@ -14,7 +14,7 @@ func (c Controller) GetAccessToken(ctx context.Context, req *authv1.GetAccessTok
 		return nil, status.Error(codes.InvalidArgument, "refresh token is required")
 	}
 
-	token, err := c.service.GetAccessToken(ctx, req.RefreshToken)
+	token, err := c.service.NewAccessToken(ctx, req.RefreshToken)
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, err.Error())
 	}

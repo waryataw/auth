@@ -9,7 +9,7 @@ import (
 	"github.com/waryataw/auth/internal/utils"
 )
 
-func (r repo) GetAccessToken(_ context.Context, refreshToken string) (string, error) {
+func (r repo) NewAccessToken(_ context.Context, refreshToken string) (string, error) {
 	claims, err := utils.VerifyToken(refreshToken, []byte(r.authConfig.RefreshTokenSecretKey()))
 	if err != nil {
 		return "", fmt.Errorf("failed verifying refresh token: %w", err)
