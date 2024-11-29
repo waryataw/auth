@@ -38,16 +38,16 @@ func NewKafkaConsumerConfig() (*kafkaConsumerConfig, error) {
 	}, nil
 }
 
-func (cfg *kafkaConsumerConfig) Brokers() []string {
-	return cfg.brokers
+func (c *kafkaConsumerConfig) Brokers() []string {
+	return c.brokers
 }
 
-func (cfg *kafkaConsumerConfig) GroupID() string {
-	return cfg.groupID
+func (c *kafkaConsumerConfig) GroupID() string {
+	return c.groupID
 }
 
 // Config возвращает конфигурацию для sarama consumer
-func (cfg *kafkaConsumerConfig) Config() *sarama.Config {
+func (c *kafkaConsumerConfig) Config() *sarama.Config {
 	config := sarama.NewConfig()
 	config.Version = sarama.V2_6_0_0
 	config.Consumer.Group.Rebalance.GroupStrategies = []sarama.BalanceStrategy{sarama.NewBalanceStrategyRoundRobin()}

@@ -6,13 +6,13 @@ import (
 
 // Controller Имплементация Auth сервиса.
 type Controller struct {
-	authv1.UnimplementedAuthServiceServer
-	userService UserService
+	authv1.UnimplementedAuthServer
+	service Service
 }
 
 // NewController Конструктор Имплементации Auth сервиса.
-func NewController(userService UserService) *Controller {
+func NewController(service Service) *Controller {
 	return &Controller{
-		userService: userService,
+		service: service,
 	}
 }

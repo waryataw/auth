@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/waryataw/auth/internal/api/auth"
+	"github.com/waryataw/auth/internal/api/user"
 )
 
 type service struct {
@@ -11,7 +11,7 @@ type service struct {
 // NewService Конструктор сервиса для операций с пользователем.
 func NewService(
 	repository Repository,
-) auth.UserService {
+) user.Service {
 	return &service{
 		repository: repository,
 	}

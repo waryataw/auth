@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package user_v1;
+
+option go_package = "github.com/waryataw/user/pkg/userv1";
+
+enum Role {
+  UNKNOWN = 0;
+  USER = 1;
+  ADMIN = 2;
+}

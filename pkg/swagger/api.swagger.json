@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Auth API",
+    "title": "User API",
     "version": "1.0.0",
     "contact": {
       "name": "Anton Waryat",
@@ -10,7 +10,7 @@
   },
   "tags": [
     {
-      "name": "AuthService"
+      "name": "UserService"
     }
   ],
   "host": "localhost:8080",
@@ -28,12 +28,12 @@
     "/user/v1": {
       "post": {
         "summary": "Создание нового пользователя",
-        "operationId": "AuthService_CreateUser",
+        "operationId": "UserService_CreateUser",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/auth_v1CreateUserResponse"
+              "$ref": "#/definitions/user_v1CreateUserResponse"
             }
           },
           "default": {
@@ -49,24 +49,24 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/auth_v1CreateUserRequest"
+              "$ref": "#/definitions/user_v1CreateUserRequest"
             }
           }
         ],
         "tags": [
-          "AuthService"
+          "UserService"
         ]
       }
     },
     "/user/v1/by-name/{name}": {
       "get": {
         "summary": "Получение существующего пользователя",
-        "operationId": "AuthService_GetUser2",
+        "operationId": "UserService_GetUser2",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/auth_v1GetUserResponse"
+              "$ref": "#/definitions/user_v1GetUserResponse"
             }
           },
           "default": {
@@ -94,19 +94,19 @@
           }
         ],
         "tags": [
-          "AuthService"
+          "UserService"
         ]
       }
     },
     "/user/v1/{id}": {
       "get": {
         "summary": "Получение существующего пользователя",
-        "operationId": "AuthService_GetUser",
+        "operationId": "UserService_GetUser",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/auth_v1GetUserResponse"
+              "$ref": "#/definitions/user_v1GetUserResponse"
             }
           },
           "default": {
@@ -134,12 +134,12 @@
           }
         ],
         "tags": [
-          "AuthService"
+          "UserService"
         ]
       },
       "delete": {
         "summary": "Удаление существующего пользователя",
-        "operationId": "AuthService_DeleteUser",
+        "operationId": "UserService_DeleteUser",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -166,12 +166,12 @@
           }
         ],
         "tags": [
-          "AuthService"
+          "UserService"
         ]
       },
       "patch": {
         "summary": "Изменение существующего пользователя",
-        "operationId": "AuthService_UpdateUser",
+        "operationId": "UserService_UpdateUser",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -201,18 +201,18 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AuthServiceUpdateUserBody"
+              "$ref": "#/definitions/UserServiceUpdateUserBody"
             }
           }
         ],
         "tags": [
-          "AuthService"
+          "UserService"
         ]
       }
     }
   },
   "definitions": {
-    "AuthServiceUpdateUserBody": {
+    "UserServiceUpdateUserBody": {
       "type": "object",
       "properties": {
         "name": {
@@ -224,86 +224,10 @@
           "title": "Email"
         },
         "role": {
-          "$ref": "#/definitions/auth_v1Role",
+          "$ref": "#/definitions/user_v1Role",
           "title": "Роль"
         }
       }
-    },
-    "auth_v1CreateUserRequest": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "title": "Имя"
-        },
-        "email": {
-          "type": "string",
-          "title": "Email"
-        },
-        "password": {
-          "type": "string",
-          "title": "Пароль"
-        },
-        "passwordConfirm": {
-          "type": "string",
-          "title": "Подтверждение пароля"
-        },
-        "role": {
-          "$ref": "#/definitions/auth_v1Role",
-          "title": "Роль(Пользователь или Админ)"
-        }
-      }
-    },
-    "auth_v1CreateUserResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64",
-          "title": "Идентификатор"
-        }
-      }
-    },
-    "auth_v1GetUserResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64",
-          "title": "Идентификатор"
-        },
-        "name": {
-          "type": "string",
-          "title": "Имя"
-        },
-        "email": {
-          "type": "string",
-          "title": "Email"
-        },
-        "role": {
-          "$ref": "#/definitions/auth_v1Role",
-          "title": "Роль"
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "title": "Дата создания"
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time",
-          "title": "Дата изменения"
-        }
-      }
-    },
-    "auth_v1Role": {
-      "type": "string",
-      "enum": [
-        "UNKNOWN",
-        "USER",
-        "ADMIN"
-      ],
-      "default": "UNKNOWN"
     },
     "protobufAny": {
       "type": "object",
@@ -332,6 +256,82 @@
           }
         }
       }
+    },
+    "user_v1CreateUserRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Имя"
+        },
+        "email": {
+          "type": "string",
+          "title": "Email"
+        },
+        "password": {
+          "type": "string",
+          "title": "Пароль"
+        },
+        "passwordConfirm": {
+          "type": "string",
+          "title": "Подтверждение пароля"
+        },
+        "role": {
+          "$ref": "#/definitions/user_v1Role",
+          "title": "Роль(Пользователь или Админ)"
+        }
+      }
+    },
+    "user_v1CreateUserResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64",
+          "title": "Идентификатор"
+        }
+      }
+    },
+    "user_v1GetUserResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64",
+          "title": "Идентификатор"
+        },
+        "name": {
+          "type": "string",
+          "title": "Имя"
+        },
+        "email": {
+          "type": "string",
+          "title": "Email"
+        },
+        "role": {
+          "$ref": "#/definitions/user_v1Role",
+          "title": "Роль"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Дата создания"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Дата изменения"
+        }
+      }
+    },
+    "user_v1Role": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN",
+        "USER",
+        "ADMIN"
+      ],
+      "default": "UNKNOWN"
     }
   }
 }

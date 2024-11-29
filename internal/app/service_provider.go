@@ -5,10 +5,16 @@ import (
 	"log"
 
 	"github.com/IBM/sarama"
-	"github.com/waryataw/auth/internal/api/auth"
+	accessApi "github.com/waryataw/auth/internal/api/access"
+	authApi "github.com/waryataw/auth/internal/api/auth"
+	userApi "github.com/waryataw/auth/internal/api/user"
 	"github.com/waryataw/auth/internal/config"
 	"github.com/waryataw/auth/internal/config/env"
+	accessRepository "github.com/waryataw/auth/internal/repository/access"
+	authRepository "github.com/waryataw/auth/internal/repository/auth"
 	userRepository "github.com/waryataw/auth/internal/repository/user"
+	accessService "github.com/waryataw/auth/internal/service/access"
+	authService "github.com/waryataw/auth/internal/service/auth"
 	serviceConsumer "github.com/waryataw/auth/internal/service/consumer"
 	"github.com/waryataw/auth/internal/service/consumer/user_saver"
 	userService "github.com/waryataw/auth/internal/service/user"
@@ -26,12 +32,17 @@ type serviceProvider struct {
 	httpConfig          config.HTTPConfig
 	kafkaConsumerConfig config.KafkaConsumerConfig
 	swaggerConfig       config.SwaggerConfig
+	authConfig          config.AuthConfig
 
-	dbClient       db.Client
-	txManager      db.TxManager
-	userRepository userService.Repository
+	dbClient         db.Client
+	txManager        db.TxManager
+	userRepository   userService.Repository
+	authRepository   authService.Repository
+	accessRepository accessService.Repository
 
-	userService auth.UserService
+	userService   userApi.Service
+	authService   authApi.Service
+	accessService accessApi.Service
 
 	userSaverConsumer serviceConsumer.Service
 
@@ -39,7 +50,9 @@ type serviceProvider struct {
 	consumerGroup        sarama.ConsumerGroup
 	consumerGroupHandler *consumer.GroupHandler
 
-	controller *auth.Controller
+	userController   *userApi.Controller
+	authController   *authApi.Controller
+	accessController *accessApi.Controller
 }
 
 func newServiceProvider() *serviceProvider {
@@ -111,6 +124,19 @@ func (s *serviceProvider) SwaggerConfig() config.SwaggerConfig {
 	return s.swaggerConfig
 }
 
+func (s *serviceProvider) AuthConfig() config.AuthConfig {
+	if s.authConfig == nil {
+		cfg, err := env.NewAuthConfig()
+		if err != nil {
+			log.Fatalf("failed to get auth config: %s", err.Error())
+		}
+
+		s.authConfig = cfg
+	}
+
+	return s.authConfig
+}
+
 func (s *serviceProvider) DBClient(ctx context.Context) db.Client {
 	if s.dbClient == nil {
 		cl, err := pg.New(ctx, s.PGConfig().DSN())
@@ -146,6 +172,22 @@ func (s *serviceProvider) UserRepository(ctx context.Context) userService.Reposi
 	return s.userRepository
 }
 
+func (s *serviceProvider) AuthRepository(_ context.Context) authService.Repository {
+	if s.authRepository == nil {
+		s.authRepository = authRepository.NewRepository(s.AuthConfig())
+	}
+
+	return s.authRepository
+}
+
+func (s *serviceProvider) AccessRepository(ctx context.Context) accessService.Repository {
+	if s.accessRepository == nil {
+		s.accessRepository = accessRepository.NewRepository(s.AuthConfig(), s.DBClient(ctx))
+	}
+
+	return s.accessRepository
+}
+
 func (s *serviceProvider) UserSaverConsumer(ctx context.Context) serviceConsumer.Service {
 	if s.userSaverConsumer == nil {
 		s.userSaverConsumer = user_saver.NewService(
@@ -157,7 +199,7 @@ func (s *serviceProvider) UserSaverConsumer(ctx context.Context) serviceConsumer
 	return s.userSaverConsumer
 }
 
-func (s *serviceProvider) UserService(ctx context.Context) auth.UserService {
+func (s *serviceProvider) UserService(ctx context.Context) userApi.Service {
 	if s.userService == nil {
 		s.userService = userService.NewService(
 			s.UserRepository(ctx),
@@ -167,12 +209,44 @@ func (s *serviceProvider) UserService(ctx context.Context) auth.UserService {
 	return s.userService
 }
 
-func (s *serviceProvider) AuthController(ctx context.Context) *auth.Controller {
-	if s.controller == nil {
-		s.controller = auth.NewController(s.UserService(ctx))
+func (s *serviceProvider) AuthService(ctx context.Context) authApi.Service {
+	if s.authService == nil {
+		s.authService = authService.NewService(s.AuthRepository(ctx), s.UserRepository(ctx))
 	}
 
-	return s.controller
+	return s.authService
+}
+
+func (s *serviceProvider) AccessService(ctx context.Context) accessApi.Service {
+	if s.accessService == nil {
+		s.accessService = accessService.NewService(s.AccessRepository(ctx))
+	}
+
+	return s.accessService
+}
+
+func (s *serviceProvider) UserController(ctx context.Context) *userApi.Controller {
+	if s.userController == nil {
+		s.userController = userApi.NewController(s.UserService(ctx))
+	}
+
+	return s.userController
+}
+
+func (s *serviceProvider) AuthController(ctx context.Context) *authApi.Controller {
+	if s.authController == nil {
+		s.authController = authApi.NewController(s.AuthService(ctx))
+	}
+
+	return s.authController
+}
+
+func (s *serviceProvider) AccessController(ctx context.Context) *accessApi.Controller {
+	if s.accessController == nil {
+		s.accessController = accessApi.NewController(s.AccessService(ctx))
+	}
+
+	return s.accessController
 }
 
 func (s *serviceProvider) Consumer() kafka.Consumer {

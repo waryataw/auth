@@ -36,6 +36,6 @@ func NewSwaggerConfig() (config.SwaggerConfig, error) {
 	}, nil
 }
 
-func (cfg *swaggerConfig) Address() string {
-	return net.JoinHostPort(cfg.host, cfg.port)
+func (c *swaggerConfig) Address() string {
+	return net.JoinHostPort(c.host, c.port)
 }

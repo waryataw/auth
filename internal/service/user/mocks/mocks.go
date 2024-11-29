@@ -2,7 +2,7 @@
 
 package mocks
 
-//go:generate minimock -i github.com/waryataw/auth/internal/service/user.Repository -o mocks.go -n RepositoryMock -p mocks
+//go:generate minimock -i github.com/waryataw/user/internal/service/user.Repository -o mocks.go -n RepositoryMock -p mocks
 
 import (
 	"context"
